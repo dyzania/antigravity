@@ -17,7 +17,7 @@ requireRole('admin');
     <script>
         const ANTIGRAVITY_BASE_URL = "<?php echo defined('BASE_URL') ? BASE_URL : ''; ?>";
     </script>
-    <script src="../js/dashboard-refresh.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/dashboard-refresh.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .sidebar-active { background: rgba(255, 255, 255, 0.1); border-left: 4px solid #ffcd00; }
@@ -54,13 +54,13 @@ requireRole('admin');
         </div>
 
         <nav class="flex-1 px-4 py-8 space-y-1">
-            <a href="dashboard.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'dashboard.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="dashboard.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'dashboard.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-chart-pie mr-4 text-lg"></i>Dashboard
             </a>
-            <a href="analytics.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'analytics.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="analytics.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'analytics.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-chart-line mr-4 text-lg"></i>Analytics
             </a>
-            <a href="sentiment-analytics.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'sentiment-analytics.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="sentiment-analytics.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'sentiment-analytics.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-brain mr-4 text-lg"></i>Sentiment
             </a>
             
@@ -68,19 +68,19 @@ requireRole('admin');
                 <p class="text-[10px] font-black uppercase tracking-widest text-gray-500">Management</p>
             </div>
 
-            <a href="windows.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'windows.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="windows.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'windows.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-desktop mr-4 text-lg"></i>Windows
             </a>
-            <a href="services.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'services.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="services.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'services.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-concierge-bell mr-4 text-lg"></i>Services
             </a>
-            <a href="users.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'users.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="users.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'users.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-users-cog mr-4 text-lg"></i>Users
             </a>
-            <a href="chatbot.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'chatbot.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="chatbot.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'chatbot.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-robot mr-4 text-lg"></i>AI Settings
             </a>
-            <a href="history.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'history.php') ? 'bg-primary-600/20 text-white border-l-4 border-accent-500 pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+            <a href="history.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'history.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-history mr-4 text-lg"></i>Ticket History
             </a>
         </nav>
@@ -95,17 +95,21 @@ requireRole('admin');
     <!-- Main Content Wrapper -->
     <div id="admin-main-content" class="flex-1 <?php echo $mainContentClass; ?> min-h-screen flex flex-col transition-all duration-300">
         <!-- Top Header -->
-        <header class="h-24 glass-morphism sticky top-0 z-40 border-b border-slate-200/50 px-10 flex items-center justify-between shadow-sm">
-            <div class="flex items-center flex-1 max-w-xl">
-                <button onclick="toggleSidebar()" class="mr-6 text-slate-400 hover:text-primary-600 transition-colors">
+        <header class="h-24 bg-gradient-to-r from-primary-900 via-primary-700 to-secondary-800 sticky top-0 z-40 border-b border-white/10 px-10 flex items-center justify-between shadow-2xl">
+            <div class="flex items-center flex-1 max-w-2xl">
+                <button onclick="toggleSidebar()" class="mr-6 text-white/70 hover:text-white transition-colors">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
-                <!-- Search Bar -->
-                <div class="relative group flex-1 max-w-xl">
-                    <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                        <i class="fas fa-search text-xs"></i>
+                
+                <!-- Brand Identity -->
+                <div class="flex items-center space-x-4 pl-6 border-l border-white/10">
+                    <div class="bg-white p-1.5 rounded-lg shadow-lg">
+                        <img src="<?php echo BASE_URL; ?>/img/logo.png" alt="ISPSC Logo" class="w-10 h-10 object-contain">
                     </div>
-                    <input type="text" id="adminSearchInput" placeholder="Intelligence Search... (Ctrl+K)" class="w-full bg-slate-100/50 border-none rounded-xl py-3 pl-14 pr-8 text-sm font-bold focus:ring-4 focus:ring-primary-100 focus:bg-white transition-all">
+                    <div class="flex flex-col">
+                        <h1 class="text-2xl font-black font-heading text-white tracking-tight leading-none">ISPSC</h1>
+                        <p class="text-[10px] font-bold text-white/70 tracking-[0.2em] uppercase mt-0.5">Main E-Queue System</p>
+                    </div>
                 </div>
 
                 <script>
@@ -123,13 +127,6 @@ requireRole('admin');
                             mainContent.classList.add('ml-0');
                         }
                     }
-
-                    document.addEventListener('keydown', function(e) {
-                        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                            e.preventDefault();
-                            document.getElementById('adminSearchInput').focus();
-                        }
-                    });
                 </script>
             </div>
 
@@ -141,15 +138,15 @@ requireRole('admin');
                     <span class="text-[10px] font-black uppercase tracking-widest">System Live</span>
                 </div>
 
-                <div class="h-8 w-px bg-slate-200"></div>
+                <div class="h-8 w-px bg-white/10"></div>
 
                 <!-- Profile -->
                 <div class="flex items-center space-x-4">
                     <div class="text-right">
-                        <p class="text-xs font-black text-gray-900 leading-none">Admin User</p>
-                        <p class="text-[10px] font-black text-primary-600 uppercase tracking-widest mt-1">Executive</p>
+                        <p class="text-xs font-black text-white leading-none">Admin User</p>
+                        <p class="text-[10px] font-black text-white/60 uppercase tracking-widest mt-1">Executive</p>
                     </div>
-                    <img class="w-11 h-11 rounded-xl shadow-lg" src="https://ui-avatars.com/api/?name=Admin&background=0c4b05&color=fff" alt="admin photo">
+                    <img class="w-11 h-11 rounded-xl shadow-lg border-2 border-white/20" src="https://ui-avatars.com/api/?name=Admin&background=0c4b05&color=fff" alt="admin photo">
                 </div>
             </div>
         </header>

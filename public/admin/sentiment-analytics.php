@@ -63,7 +63,7 @@ $windowBreakdown = $db->query("
         </div>
         <div class="bg-slate-900 rounded-xl p-8 shadow-xl shadow-slate-900/20 text-white flex flex-col items-center text-center">
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Average Score</p>
-            <p class="text-4xl font-black font-heading text-indigo-400">
+            <p class="text-4xl font-black font-heading text-primary-400">
                 <?php echo number_format($stats['avg_sentiment_score'] ?? 0, 2); ?>
             </p>
         </div>
@@ -172,11 +172,11 @@ $windowBreakdown = $db->query("
                             </div>
                             <?php 
                                 $sentimentIcons = [
-                                    'very_positive' => ['😊', 'text-emerald-600', 'bg-emerald-50'],
-                                    'positive' => ['🙂', 'text-green-600', 'bg-green-50'],
+                                    'very_positive' => ['😊', 'text-primary-800', 'bg-primary-100'],
+                                    'positive' => ['🙂', 'text-primary-600', 'bg-primary-50'],
                                     'neutral' => ['😐', 'text-slate-600', 'bg-slate-50'],
-                                    'negative' => ['🙁', 'text-orange-600', 'bg-orange-50'],
-                                    'very_negative' => ['😞', 'text-red-600', 'bg-red-50']
+                                    'negative' => ['🙁', 'text-secondary-600', 'bg-secondary-50'],
+                                    'very_negative' => ['😞', 'text-secondary-800', 'bg-secondary-100']
                                 ];
                                 $style = $sentimentIcons[$feedback['sentiment']] ?? $sentimentIcons['neutral'];
                             ?>
@@ -212,7 +212,7 @@ $windowBreakdown = $db->query("
                         <?php echo $stats['negative']; ?>,
                         <?php echo $stats['very_negative']; ?>
                     ],
-                    backgroundColor: ['#10b981', '#34d399', '#94a3b8', '#f59e0b', '#ef4444'],
+                    backgroundColor: ['#0c4b05', '#15803d', '#94a3b8', '#b91c1c', '#8b0101'],
                     borderWidth: 0,
                     hoverOffset: 20
                 }]

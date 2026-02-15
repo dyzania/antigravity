@@ -339,7 +339,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                 section.classList.remove('hidden');
                 
                 try {
-                    const response = await fetch(`../api/get-available-slots.php?service_id=${selectedServiceId}&date=${date}`);
+                    const response = await fetch(`${ANTIGRAVITY_BASE_URL}/api/get-available-slots.php?service_id=${selectedServiceId}&date=${date}`);
                     const data = await response.json();
                     
                     if (data.error) {
@@ -395,7 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Booking...';
                 
                 try {
-                    const response = await fetch('../api/create-appointment.php', {
+                    const response = await fetch(`${ANTIGRAVITY_BASE_URL}/api/create-appointment.php`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -435,7 +435,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                 }
 
                 try {
-                    const response = await fetch('../api/cancel-appointment.php', {
+                    const response = await fetch(`${ANTIGRAVITY_BASE_URL}/api/cancel-appointment.php`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -463,6 +463,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
 
 
     <?php include __DIR__ . '/../../includes/chatbot-widget.php'; ?>
-    <script src="../js/notifications.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>

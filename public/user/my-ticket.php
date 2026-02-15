@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     <script>
         const ANTIGRAVITY_BASE_URL = "<?php echo defined('BASE_URL') ? BASE_URL : ''; ?>";
     </script>
-    <script src="../js/dashboard-refresh.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/dashboard-refresh.js"></script>
 </head>
 <body class="min-h-screen pb-20">
     <?php include __DIR__ . '/../../includes/user-navbar.php'; ?>
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                         <div class="flex flex-col">
                                             <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-primary-400 opacity-60 mb-1 md:mb-2">Queue Position</span>
                                             <div class="flex items-baseline space-x-3">
-                                                <span class="text-2xl md:text-5xl font-black text-white">
+                                                <span id="ticket-queue-position" class="text-2xl md:text-5xl font-black text-white">
                                                     <?php 
                                                         if ($ticket['is_archived'] == 1 && $ticket['status'] !== 'completed') {
                                                             echo "SERVING";
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                                 </div>
                                                 <div class="pt-3 md:pt-5 border-t border-white/10">
                                                     <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-amber-400 mb-1 md:mb-2 block">Your Waiting Time</span>
-                                                    <span class="text-2xl md:text-5xl font-black text-amber-300 leading-none block">~<?php echo $estimatedWait; ?>m wait</span>
+                                                    <span id="ticket-estimated-wait" class="text-2xl md:text-5xl font-black text-amber-300 leading-none block">~<?php echo $estimatedWait; ?>m wait</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -308,16 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     </main>
 
     <script>
-        // Initialize silent auto-refresh for ticket status
-        if (<?php echo ($ticket && $ticket['status'] !== 'completed') ? 'true' : 'false'; ?>) {
-            const refresh = new DashboardRefresh(['ticket-main-content'], 10000);
-            
-            // Sync with Live Status whenever dashboard updates
-            document.addEventListener('dashboard:updated', () => {
-                // syncLiveStatus(); Removed
-            });
-        }
-
+        // Initialize silent auto-refresh moved to bottom for reliability
 
         <?php if ($ticket): ?>
         function getTicketMetaData() {
@@ -329,10 +320,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             const windowName = <?php echo json_encode($ticket['window_name'] ?? ''); ?>;
             
             // Reach into DOM for dynamic values (position/wait)
-            const posText = document.querySelector('.text-2xl.3xl\\:text-4xl.font-black.text-white')?.textContent || "0";
+            const posText = document.getElementById('ticket-queue-position')?.textContent || "0";
             const pos = parseInt(posText.replace('#', '')) - 1;
-            const waitText = document.querySelector('.text-2xl.3xl\\:text-4xl.font-black.text-amber-300')?.textContent || "0";
-            const wait = parseInt(waitText.replace('~', '').replace(' Minutes', ''));
+            const waitText = document.getElementById('ticket-estimated-wait')?.textContent || "0";
+            const wait = parseInt(waitText.replace('~', '').replace(' Minutes', '').replace('m wait', ''));
 
             return {
                 ticket_number: ticketNum,
@@ -346,13 +337,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
         }
         <?php endif; ?>
 
-
-
         async function snoozeTicket(ticketId) {
             if (!await equeueConfirm('Moving your ticket back by 3 spots will give you more time. Proceed?', 'Snooze Ticket')) return;
             
             try {
-                const response = await fetch('../api/snooze-ticket.php', {
+                const response = await fetch(`${ANTIGRAVITY_BASE_URL}/api/snooze-ticket.php`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -378,7 +367,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             if (!await equeueConfirm('Are you sure you want to leave the queue? This cannot be undone.', 'Cancel Ticket')) return;
             
             try {
-                const response = await fetch('../api/user-cancel-ticket.php', {
+                const response = await fetch(`${ANTIGRAVITY_BASE_URL}/api/user-cancel-ticket.php`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -403,7 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             if (!await equeueConfirm('Are you sure you want to cancel this scheduled appointment?', 'Cancel Appointment')) return;
             
             try {
-                const response = await fetch('../api/cancel-appointment.php', {
+                const response = await fetch(`${ANTIGRAVITY_BASE_URL}/api/cancel-appointment.php`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -424,9 +413,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 await equeueAlert('Connection error', 'Network Error');
             }
         }
+
+        // Initialize silent auto-refresh for ticket status
+        if (<?php echo ($ticket && $ticket['status'] !== 'completed') ? 'true' : 'false'; ?>) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof DashboardRefresh !== 'undefined') {
+                    const refresh = new DashboardRefresh(['ticket-main-content'], 10000);
+                } else {
+                    console.error('E-Queue: DashboardRefresh library failed to load.');
+                }
+            });
+        }
     </script>
 
     <?php include __DIR__ . '/../../includes/chatbot-widget.php'; ?>
-    <script src="../js/notifications.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>

@@ -624,7 +624,7 @@ class Ticket {
             JOIN services s ON t.service_id = s.id
             JOIN users u ON t.user_id = u.id
             LEFT JOIN windows w ON t.window_id = w.id
-            WHERE t.status IN ('completed', 'cancelled')
+            WHERE t.status = 'completed'
         ";
         
         $params = [];

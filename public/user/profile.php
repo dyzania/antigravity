@@ -175,6 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 
     <?php include __DIR__ . '/../../includes/chatbot-widget.php'; ?>
-    <script src="../js/notifications.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>

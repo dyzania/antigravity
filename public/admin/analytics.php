@@ -57,7 +57,7 @@ $serviceStats = $stmt->fetchAll();
         </div>
         <!-- Card 2 -->
         <div class="bg-white rounded-xl p-6 border border-slate-100 shadow-sm flex flex-col items-center text-center space-y-4">
-            <div class="w-14 h-14 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
+            <div class="w-14 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-slate-600">
                 <i class="fas fa-hourglass-half text-2xl"></i>
             </div>
             <div>
@@ -67,7 +67,7 @@ $serviceStats = $stmt->fetchAll();
         </div>
         <!-- Card 3 -->
         <div class="bg-white rounded-xl p-6 border border-slate-100 shadow-sm flex flex-col items-center text-center space-y-4">
-            <div class="w-14 h-14 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+            <div class="w-14 h-14 bg-primary-50 rounded-lg flex items-center justify-center text-primary-600">
                 <i class="fas fa-tachometer-alt text-2xl"></i>
             </div>
             <div>
@@ -88,9 +88,9 @@ $serviceStats = $stmt->fetchAll();
                 <?php else: ?>
                     <?php foreach($serviceStats as $stat): 
                         $percent = ($stat['count'] / max(1, $todayTickets)) * 100;
-                        $colorClass = $percent > 40 ? 'bg-primary-500' : ($percent > 20 ? 'bg-amber-500' : 'bg-emerald-500');
-                        $textColor = $percent > 40 ? 'text-primary-600' : ($percent > 20 ? 'text-amber-600' : 'text-emerald-600');
-                        $bgLight = $percent > 40 ? 'bg-primary-50' : ($percent > 20 ? 'bg-amber-50' : 'bg-emerald-50');
+                        $colorClass = $percent > 40 ? 'bg-primary-500' : ($percent > 20 ? 'bg-slate-500' : 'bg-secondary-500');
+                        $textColor = $percent > 40 ? 'text-primary-600' : ($percent > 20 ? 'text-slate-600' : 'text-secondary-600');
+                        $bgLight = $percent > 40 ? 'bg-primary-50' : ($percent > 20 ? 'bg-slate-50' : 'bg-secondary-50');
                     ?>
                     <div class="flex items-center justify-between group">
                         <div class="flex items-center space-x-5">
@@ -140,10 +140,10 @@ $serviceStats = $stmt->fetchAll();
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="text-right">
-                           <div class="text-sm font-black text-<?php echo $staff['color']; ?>-600"><?php echo $staff['score']; ?>%</div>
+                           <div class="text-sm font-black text-<?php echo $staff['color'] === 'primary' ? 'primary' : ($staff['color'] === 'secondary' ? 'secondary' : 'slate'); ?>-600"><?php echo $staff['score']; ?>%</div>
                            <div class="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Efficiency</div>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-<?php echo $staff['color']; ?>-50 flex items-center justify-center text-<?php echo $staff['color']; ?>-600">
+                        <div class="w-10 h-10 rounded-full bg-<?php echo $staff['color'] === 'primary' ? 'primary' : ($staff['color'] === 'secondary' ? 'secondary' : 'slate'); ?>-50 flex items-center justify-center text-<?php echo $staff['color'] === 'primary' ? 'primary' : ($staff['color'] === 'secondary' ? 'secondary' : 'slate'); ?>-600">
                             <i class="fas fa-chart-line"></i>
                         </div>
                     </div>

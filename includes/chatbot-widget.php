@@ -41,7 +41,7 @@
                 </div>
             </div>
             <!-- Typing Indicator -->
-            <div id="typingIndicator" class="typing-indicator-wrapper hidden">
+            <div id="typingIndicator" class="typing-indicator-wrapper chat-hidden">
                 <div class="typing-bubble">
                     <span></span><span></span><span></span>
                 </div>

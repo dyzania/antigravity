@@ -104,37 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <div class="space-y-10">
-    <div class="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6"> <!-- Adjusted for centering but keeping button to right? Or fully center? User said "justify center". Let's center the text, maybe keep layout or center everything. -->
-        <!-- Actually "justify center all the text" usually implies centered alignment for headers and data. 
-             If I use text-center on the container, everything centers. 
-             But the button might look weird if not handled. 
-             Let's try to center the HEADER text specifically. 
-        -->
-        <div class="w-full text-center md:w-auto md:text-left"> <!-- Re-reading: "justify center all the text". 
-             I'll stick to what I did for Dashboard: Centered headers. -->
-        </div>
-        <!-- Wait, I should look at what I did for dashboard. I centered the headers. 
-             For tables, I should center the TH and TD.
-        -->
-    </div>
-    
-    <!-- Redoing the block above to be safer -->
-    
     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="text-center md:text-left w-full md:w-auto"> <!-- keeping md:text-left might contradict "justify center all". 
-             Let's make it ALWAYS center for the "text". 
-             The user said "justify and align center *all* the text". 
-             So I will enforce text-center. 
-        -->
-             <div class="text-center">
-                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-600 mb-2">Operations Center</p>
-                <h1 class="text-4xl 5xl:text-8xl font-black text-gray-900 font-heading tracking-tight leading-none">Window Management</h1>
-                <p class="text-gray-500 font-medium mt-2 text-sm">Control service counters and assigned staff credentials.</p>
-            </div>
+        <div class="text-left w-full md:w-auto">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-600 mb-2">Operations Center</p>
+            <h1 class="text-4xl 5xl:text-8xl font-black text-gray-900 font-heading tracking-tight leading-none">Window Management</h1>
+            <p class="text-gray-500 font-medium mt-2 text-sm">Control service counters and assigned staff credentials.</p>
         </div>
         
         <?php if ($windowCount < $MAX_WINDOWS): ?>
-            <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-8 py-4 rounded-lg shadow-2xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center font-black text-sm font-heading">
+            <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-primary-600 text-white px-8 py-4 rounded-lg shadow-2xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center font-black text-sm font-heading">
                 <i class="fas fa-plus mr-3"></i>Deploy <?php echo $nextWindowStr; ?>
             </button>
         <?php else: ?>
@@ -145,32 +123,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     
     <?php if($success_msg): ?>
-        <div class="p-6 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-800 flex items-center justify-center shadow-lg shadow-emerald-100/50">
+        <div class="p-6 bg-primary-50 rounded-xl border border-primary-100 text-primary-800 flex items-center justify-center shadow-lg shadow-primary-100/50">
             <i class="fas fa-check-circle mr-4 text-2xl"></i>
             <span class="font-bold"><?php echo $success_msg; ?></span>
         </div>
     <?php endif; ?>
     
     <?php if($error_msg): ?>
-        <div class="p-6 bg-rose-50 rounded-xl border border-rose-100 text-rose-800 flex items-center justify-center shadow-lg shadow-rose-100/50">
+        <div class="p-6 bg-secondary-50 rounded-xl border border-secondary-100 text-secondary-800 flex items-center justify-center shadow-lg shadow-secondary-100/50">
             <i class="fas fa-exclamation-circle mr-4 text-2xl"></i>
             <span class="font-bold"><?php echo $error_msg; ?></span>
         </div>
     <?php endif; ?>
 
-    <div class="bg-white rounded-2xl shadow-2xl shadow-slate-200/40 border border-white overflow-hidden">
+    <div id="windows-list-container" class="bg-white rounded-2xl shadow-xl shadow-slate-300/50 border border-slate-300 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-center"> <!-- Changed text-left to text-center -->
-                <thead class="bg-slate-50 border-b border-slate-100">
+            <table class="w-full text-center">
+                <thead class="bg-slate-100 border-b border-slate-200">
                     <tr>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Module ID</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Internal Name</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Access Code</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Availability</th>
-                        <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Control</th> <!-- Removed text-right, added text-center -->
+                        <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Control</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody class="divide-y divide-slate-200">
                     <?php if (empty($windows)): ?>
                         <tr>
                             <td colspan="5" class="px-10 py-20 text-center">
@@ -204,8 +182,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </td>
                                 <td class="px-10 py-6">
                                     <span class="px-2 py-1 flex items-center justify-center space-x-2"> <!-- Added justify-center -->
-                                        <span class="w-2 h-2 rounded-full <?php echo $window['is_active'] ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-300'; ?>"></span>
-                                        <span class="text-[10px] font-black uppercase tracking-widest <?php echo $window['is_active'] ? 'text-emerald-600' : 'text-slate-400'; ?>">
+                                        <span class="w-2 h-2 rounded-full <?php echo $window['is_active'] ? 'bg-primary-500 shadow-[0_0_10px_rgba(12,75,5,0.5)]' : 'bg-slate-300'; ?>"></span>
+                                        <span class="text-[10px] font-black uppercase tracking-widest <?php echo $window['is_active'] ? 'text-primary-600' : 'text-slate-400'; ?>">
                                             <?php echo $window['is_active'] ? 'Live' : 'Standby'; ?>
                                         </span>
                                     </span>
@@ -218,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <input type="hidden" name="staff_id" value="<?php echo $window['staff_id']; ?>">
                                         <button type="button" 
                                                 onclick="handleDeleteWindow(<?php echo $window['id']; ?>, '<?php echo $window['window_number']; ?>')"
-                                                class="text-slate-300 hover:text-rose-500 transition-all p-3 rounded-lg hover:bg-rose-50 active:scale-95" 
+                                                class="text-slate-300 hover:text-secondary-500 transition-all p-3 rounded-lg hover:bg-secondary-50 active:scale-95" 
                                                 title="Terminate Module">
                                             <i class="fas fa-power-off"></i>
                                         </button>
@@ -234,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <!-- Create Modal -->
-<div id="createModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-opacity p-4">
+<div id="createModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden flex items-center justify-center z-50 transition-opacity p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-10 transform transition-all border border-white">
         <div class="flex justify-between items-center mb-8">
             <div>
@@ -250,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
             <input type="hidden" name="action" value="create_window">
             
-            <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+            <div class="p-6 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div>
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Auto-Generated Access Code</p>
                     <p class="text-xl font-black text-gray-900 font-mono tracking-tighter"><?php echo strtolower(str_replace('-', '', $nextWindowStr)); ?></p>
@@ -267,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="flex justify-end pt-4">
-                <button type="submit" class="w-full bg-indigo-600 text-white py-5 rounded-lg font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95">
+                <button type="submit" class="w-full bg-primary-600 text-white py-5 rounded-lg font-black shadow-xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95">
                     Deploy Service Module
                 </button>
             </div>
@@ -281,6 +259,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.getElementById(`delete-form-${windowId}`).submit();
         }
     }
+</script>
+
+<script src="<?php echo BASE_URL; ?>/js/dashboard-refresh.js"></script>
+<script>
+    // Auto-refresh the windows list every 5 seconds
+    new DashboardRefresh(['windows-list-container'], 5000);
 </script>
 
 <?php 

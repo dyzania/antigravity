@@ -56,12 +56,12 @@ $services = $serviceModel->getAllServicesAdmin();
 
 <div class="space-y-10">
     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="text-center w-full md:w-auto">
+        <div class="text-left w-full md:w-auto">
             <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-600 mb-2">System Configuration</p>
             <h1 class="text-4xl 5xl:text-8xl font-black text-gray-900 font-heading tracking-tight leading-none">Service Management</h1>
             <p class="text-gray-500 font-medium mt-2 text-sm">Manage available categories and queue preferences.</p>
         </div>
-        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-8 py-4 rounded-lg shadow-2xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center font-black text-sm font-heading">
+        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-primary-600 text-white px-8 py-4 rounded-lg shadow-2xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center font-black text-sm font-heading">
             <i class="fas fa-plus mr-3"></i>Add New Service
         </button>
     </div>
@@ -80,10 +80,10 @@ $services = $serviceModel->getAllServicesAdmin();
         </div>
     <?php endif; ?>
 
-    <div class="bg-white rounded-2xl shadow-2xl shadow-slate-200/40 border border-white overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl shadow-slate-300/50 border border-slate-300 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-center">
-                <thead class="bg-slate-50 border-b border-slate-100">
+                <thead class="bg-slate-100 border-b border-slate-200">
                     <tr>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Service Details</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Code</th>
@@ -91,7 +91,7 @@ $services = $serviceModel->getAllServicesAdmin();
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody class="divide-y divide-slate-200">
                     <?php if (empty($services)): ?>
                         <tr>
                             <td colspan="4" class="px-10 py-20 text-center text-gray-400">
@@ -188,7 +188,7 @@ $services = $serviceModel->getAllServicesAdmin();
 
             <div>
                 <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-2">Staff Notes (Internal)</label>
-                <textarea name="staff_notes" rows="2" class="w-full px-6 py-4 bg-amber-50 border border-amber-100 rounded-lg focus:ring-4 focus:ring-amber-100 focus:bg-white transition-all text-sm font-bold text-amber-900" placeholder="Important notes visible to staff..."></textarea>
+                <textarea name="staff_notes" rows="2" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-slate-100 focus:bg-white transition-all text-sm font-bold text-slate-900" placeholder="Important notes visible to staff..."></textarea>
             </div>
 
             <div>
@@ -197,7 +197,7 @@ $services = $serviceModel->getAllServicesAdmin();
             </div>
             
             <div class="flex justify-end pt-4">
-                <button type="submit" class="w-full bg-indigo-600 text-white py-5 rounded-lg font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95">
+                <button type="submit" class="w-full bg-primary-600 text-white py-5 rounded-lg font-black shadow-xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95">
                     Deploy Service
                 </button>
             </div>
@@ -242,7 +242,7 @@ $services = $serviceModel->getAllServicesAdmin();
 
             <div>
                 <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-2">Staff Notes (Internal)</label>
-                <textarea name="staff_notes" id="edit_staff_notes" rows="2" class="w-full px-6 py-4 bg-amber-50 border border-amber-100 rounded-lg focus:ring-4 focus:ring-amber-100 focus:bg-white transition-all text-sm font-bold text-amber-900"></textarea>
+                <textarea name="staff_notes" id="edit_staff_notes" rows="2" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-slate-100 focus:bg-white transition-all text-sm font-bold text-slate-900"></textarea>
             </div>
 
             <div>
@@ -251,7 +251,7 @@ $services = $serviceModel->getAllServicesAdmin();
             </div>
             
             <div class="flex justify-end pt-4">
-                <button type="submit" class="w-full bg-indigo-600 text-white py-5 rounded-lg font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95">
+                <button type="submit" class="w-full bg-primary-600 text-white py-5 rounded-lg font-black shadow-xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95">
                     Save Changes
                 </button>
             </div>

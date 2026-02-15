@@ -1,5 +1,5 @@
         </main>
     </div>
-    <script src="../js/notifications.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>

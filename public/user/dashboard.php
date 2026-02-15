@@ -28,7 +28,7 @@ $waitingTickets = $ticketModel->getWaitingQueue();
     <script>
         const ANTIGRAVITY_BASE_URL = "<?php echo defined('BASE_URL') ? BASE_URL : ''; ?>";
     </script>
-    <script src="../js/dashboard-refresh.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/dashboard-refresh.js"></script>
 </head>
 <body class="min-h-screen">
     <?php include __DIR__ . '/../../includes/user-navbar.php'; ?>
@@ -287,6 +287,6 @@ $waitingTickets = $ticketModel->getWaitingQueue();
     
 
     <?php include __DIR__ . '/../../includes/chatbot-widget.php'; ?>
-    <script src="../js/notifications.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>

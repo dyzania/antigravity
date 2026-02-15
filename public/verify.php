@@ -14,7 +14,7 @@ if (isset($_GET['token'])) {
         if ($userModel->verifyUser($user['id'])) {
             $message = "Email verified successfully! You can now access your account.";
             $success = true;
-            header('Refresh: 3; url=index.php?verified=true');
+            header('Refresh: 3; url=login.php?verified=true');
         } else {
             $message = "An error occurred while verifying your account. Please try again later.";
         }
@@ -58,7 +58,7 @@ if (isset($_GET['token'])) {
                 <span>Redirecting to login...</span>
             </div>
         <?php else: ?>
-            <a href="index.php" class="inline-block bg-slate-900 text-white font-black px-8 py-3 rounded-2xl shadow-xl hover:bg-black transition-all">
+            <a href="login.php" class="inline-block bg-slate-900 text-white font-black px-8 py-3 rounded-2xl shadow-xl hover:bg-black transition-all">
                 Back to Login
             </a>
         <?php endif; ?>

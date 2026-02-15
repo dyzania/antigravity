@@ -14,20 +14,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmPassword = $_POST['confirm_password'];
     
     if ($password !== $confirmPassword) {
-        $error = "Passwords do not match";
+        $error = "Access keys do not match.";
     } else {
         $userModel = new User();
         $mailService = new MailService();
         
         if ($userModel->emailExists($email)) {
-            $error = "Email already registered";
+            $error = "Identity already registered in the grid.";
         } else {
             $token = bin2hex(random_bytes(32));
             if ($userModel->register($email, $password, $fullName, $schoolId, 'user', $token)) {
                 $mailService->sendVerification($email, $fullName, $token);
-                $success = "Registration successful! Please check your email ($email) to verify your account before logging in.";
+                $success = "Registration initiated! Please verify your identity via email ($email).";
             } else {
-                $error = "Registration failed. School ID might be already in use.";
+                $error = "Protocol failure. Identity or School ID already synchronized.";
             }
         }
     }
@@ -38,198 +38,152 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - <?php echo APP_NAME; ?></title>
+    <title>Register Identity - <?php echo APP_NAME; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <?php injectTailwindConfig(); ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .register-bg {
+            background-image: linear-gradient(135deg, rgba(5, 34, 2, 0.95) 0%, rgba(2, 16, 1, 0.8) 100%), url('img/drone.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .animate-tilt {
+            animation: tilt 10s infinite linear;
+        }
+        @keyframes tilt {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(0.5deg); }
+            75% { transform: rotate(-0.5deg); }
+        }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <!-- Modern Mesh Gradient Background -->
-    <div class="mesh-gradient-container">
-        <div class="mesh-gradient-item mesh-1"></div>
-        <div class="mesh-gradient-item mesh-2"></div>
-        <div class="mesh-gradient-item mesh-3"></div>
-    </div>
+<body class="min-h-screen flex items-center justify-center p-4 register-bg font-sans selection:bg-primary-500/30">
 
-    <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl shadow-2xl overflow-hidden glass-morphism border border-white/20">
-        <!-- Brand Side -->
-        <div class="hidden md:flex flex-col justify-between p-12 bg-primary-600 text-white relative overflow-hidden">
-            <div class="z-10">
-                <div class="flex items-center space-x-3 mb-12">
-                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="fas fa-user-plus text-primary-600 text-xl"></i>
-                    </div>
-                    <span class="text-2xl font-black tracking-tight font-heading"><?php echo APP_NAME; ?></span>
-                </div>
-                
-                <h1 class="text-5xl font-black leading-tight mb-6 font-heading">
-                    Join Us and <br>
-                    <span class="text-primary-200">Skip the Line</span>
-                </h1>
-                <p class="text-primary-100 text-lg max-w-md font-light leading-relaxed">
-                    Create your account today and experience the most advanced queueing system that puts your time first.
-                </p>
-            </div>
-
-            <div class="z-10 bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/10">
-                <div class="flex items-center space-x-4 mb-4">
-                    <div class="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-check-double text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="font-black text-white">Fast Setup</p>
-                        <p class="text-primary-100 text-sm">Less than 2 minutes</p>
-                    </div>
-                </div>
-                <div class="w-full bg-primary-700/50 h-2 rounded-full overflow-hidden">
-                    <div class="bg-white w-2/3 h-full rounded-full"></div>
-                </div>
-            </div>
-
-            <!-- Decorative Elements -->
-            <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-64 h-64 bg-primary-950/20 rounded-full -ml-32 -mb-32 blur-3xl"></div>
-        </div>
-
+    <div class="max-w-[1240px] w-full grid grid-cols-1 lg:grid-cols-2 bg-primary-950/40 backdrop-blur-3xl rounded-[40px] shadow-2xl overflow-hidden border border-primary-500/20 animate-tilt">
+        
         <!-- Form Side -->
-        <div class="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white/40 backdrop-blur-3xl overflow-y-auto">
-            <div class="mb-10 text-center md:text-left">
-                <h2 class="text-3xl font-black text-gray-900 mb-2 font-heading">Create Account</h2>
-                <p class="text-gray-500 font-medium text-sm">Join thousands of users managing their time better</p>
+        <div class="p-8 md:p-16 lg:p-20 flex flex-col justify-center bg-primary-950/10 order-2 lg:order-1">
+            <div class="mb-10 text-center lg:text-left">
+                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-primary-500 mb-3">Protocol: Synchronization</p>
+                <h2 class="text-4xl font-black text-white mb-3 font-heading tracking-tight">Create Identity</h2>
+                <p class="text-gray-500 font-medium">Synchronize with our high-frequency queueing grid.</p>
             </div>
 
             <?php if (isset($error)): ?>
-                <div class="p-4 mb-6 text-sm text-secondary-700 bg-secondary-50 rounded-2xl border border-secondary-100 flex items-center animate-shake" role="alert">
-                    <i class="fas fa-exclamation-circle mr-3 text-lg"></i>
-                    <span class="font-bold"><?php echo $error; ?></span>
+                <div class="p-4 mb-6 text-sm text-secondary-400 bg-secondary-500/10 rounded-2xl border border-secondary-500/20 flex items-center animate-shake">
+                    <i class="fas fa-shield-virus mr-3 text-lg"></i>
+                    <span class="font-bold uppercase tracking-widest text-[9px]"><?php echo $error; ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($success)): ?>
-                <div class="p-4 mb-6 text-sm text-primary-700 bg-primary-50 rounded-2xl border border-primary-100 flex items-center" role="alert">
-                    <i class="fas fa-check-circle mr-3 text-lg"></i>
-                    <span class="font-bold"><?php echo $success; ?></span>
+                <div class="p-4 mb-6 text-sm text-primary-400 bg-primary-500/10 rounded-2xl border border-primary-500/20 flex items-center">
+                    <i class="fas fa-check-double mr-3 text-lg"></i>
+                    <span class="font-bold uppercase tracking-widest text-[9px]"><?php echo $success; ?></span>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="" class="space-y-5">
+            <form method="POST" action="" class="space-y-4 md:space-y-6">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
-                <div>
-                    <label class="block text-gray-700 text-xs font-black uppercase tracking-widest mb-2 ml-1" for="full_name">Full Name</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fas fa-id-card text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
-                        </div>
-                        <input 
-                            type="text" 
-                            id="full_name" 
-                            name="full_name" 
-                            required
-                            class="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all font-medium text-gray-700 placeholder-gray-400"
-                            placeholder="John Doe"
-                        >
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 text-xs font-black uppercase tracking-widest mb-2 ml-1" for="email">Email Address</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
-                        </div>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            required
-                            class="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all font-medium text-gray-700 placeholder-gray-400"
-                            placeholder="john@example.com"
-                        >
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 text-xs font-black uppercase tracking-widest mb-2 ml-1" for="school_id">School ID (Optional)</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fas fa-id-badge text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
-                        </div>
-                        <input 
-                            type="text" 
-                            id="school_id" 
-                            name="school_id" 
-                            class="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all font-medium text-gray-700 placeholder-gray-400"
-                            placeholder="e.g. 2024-0001"
-                        >
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-700 text-xs font-black uppercase tracking-widest mb-2 ml-1" for="password">Password</label>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="space-y-2 text-left">
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="full_name">Legal Name</label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <i class="fas fa-id-card text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
                             </div>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                required
-                                class="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all font-medium text-gray-700 placeholder-gray-400"
-                                placeholder="••••••••"
-                            >
+                            <input type="text" id="full_name" name="full_name" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="John Doe">
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-gray-700 text-xs font-black uppercase tracking-widest mb-2 ml-1" for="confirm_password">Confirm</label>
+                    <div class="space-y-2 text-left">
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="school_id">Local ID</label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-shield-alt text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <i class="fas fa-id-badge text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
                             </div>
-                            <input 
-                                type="password" 
-                                id="confirm_password" 
-                                name="confirm_password" 
-                                required
-                                class="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all font-medium text-gray-700 placeholder-gray-400"
-                                placeholder="••••••••"
-                            >
+                            <input type="text" id="school_id" name="school_id" class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="e.g. 2024-01">
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-2">
-                    <button 
-                        type="submit" 
-                        class="w-full bg-primary-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 hover:shadow-primary-300 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center space-x-2 text-lg"
-                    >
-                        <span>Create Account</span>
-                        <i class="fas fa-magic ml-2 text-sm"></i>
-                    </button>
+                <div class="space-y-2 text-left">
+                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Digital Envelope</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope-open-text text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                        </div>
+                        <input type="email" id="email" name="email" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="john@example.com">
+                    </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="space-y-2 text-left">
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="password">Access key</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <i class="fas fa-key text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                            </div>
+                            <input type="password" id="password" name="password" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-left">
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="confirm_password">Verify Key</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <i class="fas fa-shield-check text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                            </div>
+                            <input type="password" id="confirm_password" name="confirm_password" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="••••••••">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary-600 text-white font-black py-5 rounded-2xl shadow-2xl shadow-primary-900/20 hover:bg-primary-500 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center space-x-4 text-lg">
+                    <span>SYNCHRONIZE NOW</span>
+                    <i class="fas fa-magic text-sm opacity-50"></i>
+                </button>
             </form>
 
-            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
-                <p class="text-gray-600 font-medium text-sm">
-                    Already have an account? 
-                    <a href="index.php" class="text-primary-600 font-black hover:text-primary-700 transition-colors">Sign In</a>
+            <div class="mt-10 pt-8 border-t border-primary-500/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-gray-500 font-medium text-xs">Synchronized already?</p>
+                <a href="login.php" class="bg-primary-500/5 hover:bg-primary-500/10 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] border border-primary-500/30 transition-all active:scale-95">Access Terminal</a>
+            </div>
+        </div>
+
+        <!-- Brand Side -->
+        <div class="hidden lg:flex flex-col justify-between p-16 bg-gradient-to-bl from-primary-600/20 to-transparent relative overflow-hidden order-1 lg:order-2">
+            <div class="z-10">
+                <a href="index.php" class="flex items-center space-x-3 mb-16 group">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-12 transition-transform">
+                        <i class="fas fa-plus text-primary-600 text-2xl"></i>
+                    </div>
+                    <span class="text-3xl font-black tracking-tight font-heading text-white"><?php echo APP_NAME; ?></span>
+                </a>
+                
+                <h1 class="text-6xl font-black leading-tight mb-8 font-heading text-white text-right">
+                    JOIN THE <br>
+                    <span class="text-primary-400">EVOLUTION.</span>
+                </h1>
+                <p class="text-gray-400 text-xl max-w-sm ml-auto text-right font-medium leading-relaxed">
+                    Efficiency is not an option, it's a requirement. Register your identity to experience the next-gen grid.
                 </p>
             </div>
+
+            <div class="relative z-10 text-right">
+                <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.4em] mb-4">Encryption Level: Quantum 256</p>
+                <div class="flex justify-end space-x-2">
+                    <div class="w-2 h-2 rounded-full bg-primary-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-primary-500/40"></div>
+                    <div class="w-2 h-2 rounded-full bg-primary-500/10"></div>
+                </div>
+            </div>
+
+            <!-- Absolute decorative elements -->
+            <div class="absolute -top-20 -right-20 w-80 h-80 bg-primary-500/10 rounded-full blur-[100px]"></div>
+            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary-500/10 rounded-full blur-[100px]"></div>
         </div>
     </div>
 
-    <!-- Custom Animations -->
-    <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        .animate-shake {
-            animation: shake 0.2s ease-in-out 0s 2;
-        }
-    </style>
 </body>
 </html>

@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addMessage(message, true);
 
     // Show Typing Indicator
-    typingIndicator.classList.remove("hidden");
+    typingIndicator.classList.remove("chat-hidden");
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     sendButton.disabled = true;
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       const data = await response.json();
-      typingIndicator.classList.add("hidden");
+      typingIndicator.classList.add("chat-hidden");
 
       if (data.success) {
         addMessage(data.response, false);
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addMessage("I encountered a small hiccup. Please try again.", false);
       }
     } catch (error) {
-      typingIndicator.classList.add("hidden");
+      typingIndicator.classList.add("chat-hidden");
       addMessage("Connectivity issue. Please check your internet.", false);
     } finally {
       sendButton.disabled = false;
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function toggleChat() {
     isChatOpen = !isChatOpen;
     chatContainer.classList.toggle("active", isChatOpen);
-    chatToggleBtn.classList.toggle("hidden", isChatOpen);
+    chatToggleBtn.classList.toggle("chat-hidden", isChatOpen);
 
     if (isChatOpen) {
       setTimeout(() => messageInput.focus(), 500);

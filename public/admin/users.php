@@ -40,14 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <div class="space-y-10">
-<div class="space-y-10">
     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="text-center w-full md:w-auto">
+        <div class="text-left w-full md:w-auto">
             <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-600 mb-2">Access & Security</p>
             <h1 class="text-4xl 5xl:text-8xl font-black text-gray-900 font-heading tracking-tight leading-none">User Directory</h1>
             <p class="text-gray-500 font-medium mt-2 text-sm">Manage administrative access and staff authorizations.</p>
         </div>
-        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-8 py-4 rounded-lg shadow-2xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center font-black text-sm font-heading">
+        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-primary-600 text-white px-8 py-4 rounded-lg shadow-2xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center font-black text-sm font-heading">
             <i class="fas fa-user-plus mr-3"></i>Register New Account
         </button>
     </div>
@@ -66,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     <?php endif; ?>
 
-    <div class="bg-white rounded-2xl shadow-2xl shadow-slate-200/40 border border-white overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl shadow-slate-300/50 border border-slate-300 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-center">
-                <thead class="bg-slate-50 border-b border-slate-100">
+                <thead class="bg-slate-100 border-b border-slate-200">
                     <tr>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Identity</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Permissions</th>
@@ -77,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody class="divide-y divide-slate-200">
                     <?php if (empty($users)): ?>
                         <tr>
                             <td colspan="4" class="px-10 py-20 text-center text-gray-400 font-bold">No specialized users found in the directory.</td>
@@ -153,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="flex justify-end pt-4">
-                <button type="submit" class="w-full bg-indigo-600 text-white py-5 rounded-lg font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95">
+                <button type="submit" class="w-full bg-primary-600 text-white py-5 rounded-lg font-black shadow-xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95">
                     Authorize Identity
                 </button>
             </div>

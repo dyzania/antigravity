@@ -127,5 +127,6 @@ $history = $ticketModel->getUserTicketHistory(getUserId());
     </main>
 
     <?php include __DIR__ . '/../../includes/chatbot-widget.php'; ?>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>

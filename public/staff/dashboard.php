@@ -38,7 +38,10 @@ if ($window) {
     <?php injectTailwindConfig(); ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo generateCsrfToken(); ?>">
-    <script src="../js/dashboard-refresh.js"></script>
+    <script>
+        const ANTIGRAVITY_BASE_URL = "<?php echo defined('BASE_URL') ? BASE_URL : ''; ?>";
+    </script>
+    <script src="<?php echo BASE_URL; ?>/js/dashboard-refresh.js"></script>
 </head>
 <body class="min-h-screen">
     <?php include __DIR__ . '/../../includes/staff-navbar.php'; ?>
@@ -99,7 +102,7 @@ if ($window) {
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Served Today</p>
                             <h4 class="text-2xl font-black text-slate-900"><?php echo $staffStats['total_served']; ?></h4>
                         </div>
-                        <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                        <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                             <i class="fas fa-check-double text-xl"></i>
                         </div>
                     </div>
@@ -164,7 +167,7 @@ if ($window) {
                                               placeholder="Enter any internal notes about this transaction..." rows="2"><?php echo $ticket['staff_notes'] ?? 'Your document is ready to be received'; ?></textarea>
                                 </div>
                                 
-                                <button onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="w-full py-3 5xl:py-8 bg-slate-50 hover:bg-indigo-50 text-indigo-600 font-bold rounded-xl 5xl:rounded-[32px] transition-colors text-xs 5xl:text-2xl flex items-center justify-center gap-2 5xl:gap-6">
+                                <button onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="w-full py-3 5xl:py-8 bg-slate-50 hover:bg-primary-50 text-primary-600 font-bold rounded-xl 5xl:rounded-[32px] transition-colors text-xs 5xl:text-2xl flex items-center justify-center gap-2 5xl:gap-6">
                                     <i class="fas fa-check"></i> Complete Service
                                 </button>
                             </div>
@@ -200,7 +203,7 @@ if ($window) {
                                             <p class="text-xs 5xl:text-2xl font-bold text-gray-500 uppercase tracking-wider"><?php echo $ticket['user_name']; ?></p>
                                         </div>
                                     </div>
-                                    <div class="w-3 5xl:w-6 h-3 5xl:h-6 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-lg shadow-indigo-200 group-hover:scale-125 transition-transform duration-200"></div>
+                                    <div class="w-3 5xl:w-6 h-3 5xl:h-6 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 shadow-lg shadow-primary-200 group-hover:scale-125 transition-transform duration-200"></div>
                                 </div>
                                 <?php endforeach; ?>
                                 <?php if(count($waitingTickets) > 8): ?>
@@ -218,7 +221,7 @@ if ($window) {
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-xl 5xl:text-4xl font-black text-gray-900 font-heading">Active Transaction</h3>
                         <?php if (!empty($activeTickets)): ?>
-                            <span class="px-3 5xl:px-6 py-1 5xl:py-3 bg-indigo-100 text-indigo-700 rounded-lg 5xl:rounded-2xl text-xs 5xl:text-2xl font-black uppercase tracking-wide">Serving</span>
+                            <span class="px-3 5xl:px-6 py-1 5xl:py-3 bg-primary-100 text-primary-700 rounded-lg 5xl:rounded-2xl text-xs 5xl:text-2xl font-black uppercase tracking-wide">Serving</span>
                         <?php else: ?>
                             <span class="px-3 5xl:px-6 py-1 5xl:py-3 bg-slate-100 text-slate-500 rounded-lg 5xl:rounded-2xl text-xs 5xl:text-2xl font-black uppercase tracking-wide">Idle</span>
                         <?php endif; ?>
@@ -226,7 +229,7 @@ if ($window) {
 
                     <?php if (!empty($activeTickets)): ?>
                         <?php foreach ($activeTickets as $ticket): ?>
-                        <div class="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-indigo-100 border border-white relative group">
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-primary-100 border border-white relative group">
                             <!-- Card Header -->
                             <div class="bg-slate-900 p-8 5xl:p-20 text-white relative overflow-hidden">
                                 <div class="relative z-10 text-center">
@@ -236,7 +239,7 @@ if ($window) {
                                         <?php echo strtoupper($ticket['status']); ?>
                                     </div>
                                 </div>
-                                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-transparent"></div>
+                                <div class="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-transparent"></div>
                                 <div class="absolute -right-6 -bottom-6 text-9xl 5xl:text-[20rem] text-white opacity-5 rotate-12 select-none font-black"><?php echo $ticket['ticket_number']; ?></div>
                             </div>
 
@@ -245,7 +248,7 @@ if ($window) {
                                 <div class="text-center mb-8 5xl:mb-20">
                                     <p class="text-xs 5xl:text-2xl font-bold text-gray-400 uppercase tracking-widest mb-2 5xl:mb-6">Customer Name</p>
                                     <h4 class="text-2xl 5xl:text-6xl font-black text-gray-900 leading-tight mb-1"><?php echo $ticket['user_name']; ?></h4>
-                                    <p class="text-sm 5xl:text-3xl font-bold text-indigo-600"><?php echo $ticket['service_name']; ?></p>
+                                    <p class="text-sm 5xl:text-3xl font-bold text-primary-600"><?php echo $ticket['service_name']; ?></p>
                                     
                                     <?php if (!empty($ticket['service_notes'])): ?>
                                         <div class="mt-4 5xl:mt-10 bg-amber-50 border border-amber-200 rounded-xl p-4 5xl:p-10 text-left">
@@ -255,9 +258,9 @@ if ($window) {
                                     <?php endif; ?>
 
                                     <?php if (!empty($ticket['user_note'])): ?>
-                                        <div class="mt-4 5xl:mt-10 bg-blue-50 border border-blue-200 rounded-xl p-4 5xl:p-10 text-left">
-                                            <p class="text-[10px] 5xl:text-xl font-black text-blue-500 uppercase tracking-wider mb-1 5xl:mb-4"><i class="fas fa-comment-alt mr-1"></i> Customer Note</p>
-                                            <p class="text-xs 5xl:text-2xl font-medium text-blue-800 leading-relaxed"><?php echo nl2br(htmlspecialchars($ticket['user_note'])); ?></p>
+                                        <div class="mt-4 5xl:mt-10 bg-slate-50 border border-slate-200 rounded-xl p-4 5xl:p-10 text-left">
+                                            <p class="text-[10px] 5xl:text-xl font-black text-slate-500 uppercase tracking-wider mb-1 5xl:mb-4"><i class="fas fa-comment-alt mr-1"></i> Customer Note</p>
+                                            <p class="text-xs 5xl:text-2xl font-medium text-slate-800 leading-relaxed"><?php echo nl2br(htmlspecialchars($ticket['user_note'])); ?></p>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -273,7 +276,7 @@ if ($window) {
 
                                 <div class="space-y-3 5xl:space-y-8">
                                     <?php if ($ticket['status'] === 'called'): ?>
-                                        <button type="button" onclick="startServing(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 bg-indigo-600 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all text-sm 5xl:text-4xl flex items-center justify-center gap-2 5xl:gap-6">
+                                        <button type="button" onclick="startServing(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 bg-primary-600 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-primary-200 hover:bg-primary-700 hover:-translate-y-0.5 transition-all text-sm 5xl:text-4xl flex items-center justify-center gap-2 5xl:gap-6">
                                             <i class="fas fa-play"></i> Start Serving
                                         </button>
                                         <div class="flex gap-3 5xl:gap-8">
@@ -282,7 +285,7 @@ if ($window) {
                                             </button>
                                         </div>
                                     <?php else: ?>
-                                        <button type="button" onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 bg-emerald-500 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-emerald-200 hover:bg-emerald-600 hover:-translate-y-0.5 transition-all text-sm 5xl:text-4xl flex items-center justify-center gap-2 5xl:gap-6">
+                                        <button type="button" onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 bg-primary-500 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-primary-200 hover:bg-primary-600 hover:-translate-y-0.5 transition-all text-sm 5xl:text-4xl flex items-center justify-center gap-2 5xl:gap-6">
                                             <i class="fas fa-check"></i> Complete
                                         </button>
                                     <?php endif; ?>
@@ -297,7 +300,7 @@ if ($window) {
 
                         <!-- Call Next Mini-Button -->
                         <?php if ($window['is_active']): ?>
-                            <button type="button" onclick="callNext(<?php echo $window['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 border-2 border-dashed border-indigo-200 text-indigo-500 font-bold rounded-2xl hover:bg-indigo-50 hover:border-indigo-300 transition-all flex items-center justify-center gap-2 5xl:gap-6 text-sm 5xl:text-3xl">
+                            <button type="button" onclick="callNext(<?php echo $window['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 border-2 border-dashed border-primary-200 text-primary-500 font-bold rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all flex items-center justify-center gap-2 5xl:gap-6 text-sm 5xl:text-3xl">
                                 <i class="fas fa-plus"></i> Call Another
                             </button>
                         <?php else: ?>
@@ -308,12 +311,12 @@ if ($window) {
 
                     <?php else: ?>
                         <div class="bg-white rounded-2xl p-8 5xl:p-32 text-center shadow-xl shadow-slate-200/50 border border-slate-100 py-20 5xl:py-40">
-                            <div class="w-20 5xl:w-48 h-20 5xl:h-48 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 5xl:mb-16 animate-pulse">
-                                <i class="fas fa-bell text-indigo-500 text-2xl 5xl:text-7xl"></i>
+                            <div class="w-20 5xl:w-48 h-20 5xl:h-48 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6 5xl:mb-16 animate-pulse">
+                                <i class="fas fa-bell text-primary-500 text-2xl 5xl:text-7xl"></i>
                             </div>
                             <h3 class="text-xl 5xl:text-5xl font-black text-gray-900 mb-2 5xl:mb-10">Ready to Serve</h3>
                             <?php if ($window['is_active']): ?>
-                                <button onclick="callNext(<?php echo $window['id']; ?>, this)" class="mt-6 5xl:mt-10 px-8 5xl:px-20 py-4 5xl:py-10 bg-indigo-600 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all text-sm 5xl:text-4xl uppercase tracking-widest">
+                                <button onclick="callNext(<?php echo $window['id']; ?>, this)" class="mt-6 5xl:mt-10 px-8 5xl:px-20 py-4 5xl:py-10 bg-primary-600 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all text-sm 5xl:text-4xl uppercase tracking-widest">
                                     Call Next Ticket
                                 </button>
                             <?php else: ?>
@@ -329,10 +332,6 @@ if ($window) {
         <?php endif; ?>
     </main>
 
-    <script>
-        // Define Base URL for Notifications
-        const ANTIGRAVITY_BASE_URL = "<?php echo defined('BASE_URL') ? BASE_URL : ''; ?>";
-    </script>
     <script src="../js/notifications.js"></script>
     
     <script>
@@ -378,7 +377,7 @@ if ($window) {
                     body: JSON.stringify({ window_id: windowId, is_active: newStatus })
                 })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     if (data.success) {
                         // Notify and delay reload
                         document.dispatchEvent(new CustomEvent('equeue:toast', { 
@@ -418,7 +417,7 @@ if ($window) {
                     body: JSON.stringify({ window_id: windowId })
                 })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     console.log('callNext data:', data);
                     if (data.success) {
                         window.location.reload();
@@ -451,7 +450,7 @@ if ($window) {
                     body: JSON.stringify({ ticket_id: ticketId })
                 })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     if (data.success) {
                         // Notify and delay reload
                         document.dispatchEvent(new CustomEvent('equeue:toast', { 
@@ -531,7 +530,7 @@ if ($window) {
                     console.log('completeTicket response status:', res.status);
                     return res.json();
                 })
-                .then(data => {
+                .then(async data => {
                     console.log('completeTicket data:', data);
                     if (data.success) {
                         window.location.reload();
@@ -606,7 +605,7 @@ if ($window) {
                     body: JSON.stringify({ ticket_id: ticketId })
                 })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     if (data.success) {
                         // Notify and delay reload
                         document.dispatchEvent(new CustomEvent('equeue:toast', { 
@@ -672,20 +671,16 @@ if ($window) {
         document.addEventListener('mousedown', () => {
             if (alertSound.paused && alertSound.currentTime === 0) {
                 // "Prime" the audio on first click
-                alertSound.play().then(() => {
-                    alertSound.pause();
-                    alertSound.currentTime = 0;
-                }).catch(() => {});
+                alertSound.play().catch(e => console.log('Audio autoplay prevented:', e));
             }
         }, { once: true });
 
         function getWaitingTicketCount() {
             const container = document.getElementById('waiting-tickets-container');
             if (!container) return 0;
-            // Count elements with data-ticket-id (assuming they exist) or just direct children that aren't empty placeholders
-            // Based on staff/dashboard.php structure, waiting tickets are inside cards.
-            // Let's count elements with class 'bg-white' which represents a ticket card in the column
-            return container.querySelectorAll('.bg-white.rounded-3xl').length;
+            // Count elements with bg-white inside the grid (but not the empty state div)
+            // The empty state has 'p-10' or 'p-20' classes, actual tickets have 'p-6' or 'p-14'
+            return container.querySelectorAll('.bg-white .flex.items-center').length;
         }
 
         // Initialize state
@@ -723,6 +718,6 @@ if ($window) {
             }
         });
     </script>
-    <script src="../js/notifications.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 </html>
