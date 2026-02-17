@@ -1,9 +1,11 @@
 <?php
 $pageTitle = 'Service Management';
 require_once __DIR__ . '/../../models/Service.php';
+require_once __DIR__ . '/../../models/Ticket.php';
 include __DIR__ . '/../../includes/admin-layout-header.php';
 
 $serviceModel = new Service();
+$ticketModel = new Ticket();
 $message = '';
 $error = '';
 
@@ -17,10 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $code = sanitize($_POST['service_code']);
             $desc = sanitize($_POST['description']);
             $reqs = sanitize($_POST['requirements']);
-            $time = sanitize($_POST['estimated_time']); 
+            $targetTime = sanitize($_POST['target_time']);
             $staffNotes = isset($_POST['staff_notes']) ? sanitize($_POST['staff_notes']) : null;
             
-            $result = $serviceModel->createService($name, $code, $desc, $reqs, $time, $staffNotes);
+            $result = $serviceModel->createService($name, $code, $desc, $reqs, $staffNotes, $targetTime);
             if ($result['success']) {
                 $message = $result['message'];
             } else {
@@ -32,10 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $code = sanitize($_POST['service_code']);
             $desc = sanitize($_POST['description']);
             $reqs = sanitize($_POST['requirements']);
-            $time = sanitize($_POST['estimated_time']);
+            $targetTime = sanitize($_POST['target_time']);
             $staffNotes = isset($_POST['staff_notes']) ? sanitize($_POST['staff_notes']) : null;
             
-            if ($serviceModel->updateService($id, $name, $code, $desc, $reqs, $time, $staffNotes)) {
+            if ($serviceModel->updateService($id, $name, $code, $desc, $reqs, $staffNotes, $targetTime)) {
                 $message = "Service updated successfully.";
             } else {
                 $error = "Failed to update service.";
@@ -87,14 +89,15 @@ $services = $serviceModel->getAllServicesAdmin();
                     <tr>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Service Details</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Code</th>
-                        <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Processing Time</th>
+                        <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Avg. Process Time</th>
+                        <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Target Time</th>
                         <th class="px-10 py-6 font-black text-gray-400 uppercase text-[10px] tracking-[0.3em] text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
                     <?php if (empty($services)): ?>
                         <tr>
-                            <td colspan="4" class="px-10 py-20 text-center text-gray-400">
+                            <td colspan="5" class="px-10 py-20 text-center text-gray-400">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-20 h-20 bg-slate-50 rounded-xl flex items-center justify-center mb-6">
                                         <i class="fas fa-inbox text-4xl text-slate-200"></i>
@@ -105,8 +108,13 @@ $services = $serviceModel->getAllServicesAdmin();
                             </td>
                         </tr>
                     <?php else: ?>
-                        <?php foreach ($services as $service): ?>
-                            <tr class="hover:bg-slate-50/80 transition-colors group">
+                        <?php foreach ($services as $service): 
+                            $apt = $ticketModel->getAverageProcessTime($service['id']);
+                            $targetTime = $service['target_time'] ?? 10;
+                            $isOverSLA = $apt > $targetTime;
+                            $rowClass = $isOverSLA ? 'bg-rose-50/50 hover:bg-rose-50' : 'hover:bg-slate-50/80';
+                        ?>
+                            <tr class="<?php echo $rowClass; ?> transition-colors group border-b border-slate-100">
                                 <td class="px-10 py-6">
                                     <div class="flex flex-col items-center justify-center"> <!-- Centered wrapper for details -->
                                         <div class="font-black text-gray-900 text-sm mb-1"><?php echo htmlspecialchars($service['service_name']); ?></div>
@@ -119,9 +127,15 @@ $services = $serviceModel->getAllServicesAdmin();
                                     </span>
                                 </td>
                                 <td class="px-10 py-6">
-                                    <div class="flex items-center justify-center text-gray-600 font-bold text-sm"> <!-- Added justify-center -->
-                                        <i class="far fa-clock mr-2 text-primary-400"></i>
-                                        <?php echo htmlspecialchars($service['estimated_time']); ?>
+                                    <div class="flex items-center justify-center font-bold text-sm <?php echo $isOverSLA ? 'text-rose-600 animate-pulse' : 'text-gray-600'; ?>"> 
+                                        <i class="far fa-clock mr-2 <?php echo $isOverSLA ? 'text-rose-400' : 'text-primary-400'; ?>"></i>
+                                        <?php echo $apt; ?> mins
+                                    </div>
+                                </td>
+                                <td class="px-10 py-6">
+                                    <div class="flex items-center justify-center text-gray-600 font-bold text-sm">
+                                        <i class="fas fa-bullseye mr-2 text-slate-300"></i>
+                                        <?php echo $targetTime; ?> mins
                                     </div>
                                 </td>
                                 <td class="px-10 py-6 text-center space-x-2"> <!-- Changed text-right to text-center -->
@@ -191,10 +205,13 @@ $services = $serviceModel->getAllServicesAdmin();
                 <textarea name="staff_notes" rows="2" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-slate-100 focus:bg-white transition-all text-sm font-bold text-slate-900" placeholder="Important notes visible to staff..."></textarea>
             </div>
 
-            <div>
-                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-2">Est. Processing Time</label>
-                <input type="text" name="estimated_time" required class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-primary-100 focus:bg-white transition-all text-sm font-bold" placeholder="e.g. 15 mins">
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-2">Target Time / SLA (Mins)</label>
+                    <input type="number" name="target_time" value="10" required class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-rose-100 focus:bg-white transition-all text-sm font-bold" placeholder="e.g. 10">
+                </div>
             </div>
+ Riverside:
             
             <div class="flex justify-end pt-4">
                 <button type="submit" class="w-full bg-primary-600 text-white py-5 rounded-lg font-black shadow-xl shadow-primary-200 hover:bg-primary-700 hover:-translate-y-1 transition-all active:scale-95">
@@ -245,9 +262,11 @@ $services = $serviceModel->getAllServicesAdmin();
                 <textarea name="staff_notes" id="edit_staff_notes" rows="2" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-slate-100 focus:bg-white transition-all text-sm font-bold text-slate-900"></textarea>
             </div>
 
-            <div>
-                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-2">Est. Processing Time</label>
-                <input type="text" name="estimated_time" id="edit_estimated_time" required class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-primary-100 focus:bg-white transition-all text-sm font-bold">
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-2">Target Time / SLA (Mins)</label>
+                    <input type="number" name="target_time" id="edit_target_time" required class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-lg focus:ring-4 focus:ring-rose-100 focus:bg-white transition-all text-sm font-bold">
+                </div>
             </div>
             
             <div class="flex justify-end pt-4">
@@ -272,7 +291,7 @@ $services = $serviceModel->getAllServicesAdmin();
         document.getElementById('edit_service_code').value = service.service_code;
         document.getElementById('edit_description').value = service.description;
         document.getElementById('edit_requirements').value = service.requirements;
-        document.getElementById('edit_estimated_time').value = service.estimated_time;
+        document.getElementById('edit_target_time').value = service.target_time || 10;
         document.getElementById('edit_staff_notes').value = service.staff_notes || '';
         
         document.getElementById('editModal').classList.remove('hidden');

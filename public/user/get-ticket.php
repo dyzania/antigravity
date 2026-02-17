@@ -112,71 +112,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                 </div>
             <?php endif; ?>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-8">
-                <?php foreach ($services as $service): ?>
-                    <div class="bg-white rounded-[32px] md:rounded-[40px] 3xl:rounded-[56px] shadow-division border border-white hover:shadow-premium hover:-translate-y-2 transition-all duration-500 overflow-hidden group">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-6">
+                <?php $counter = 1; foreach ($services as $service): ?>
+                    <div class="bg-white rounded-[24px] md:rounded-[32px] 3xl:rounded-[48px] shadow-division border border-white hover:shadow-premium hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col h-full group">
                         <!-- Card Header -->
-                        <div class="px-6 md:px-10 pt-6 md:pt-10 3xl:pt-14 pb-4 md:pb-6 relative overflow-hidden">
-                            <div class="bg-primary-600 w-12 md:w-16 h-12 md:h-16 3xl:w-20 3xl:h-20 rounded-xl md:rounded-2xl 3xl:rounded-[28px] flex items-center justify-center text-white shadow-lg shadow-primary-100 mb-4 md:mb-6 group-hover:rotate-6 transition-transform">
-                                <span class="text-base md:text-xl 3xl:text-3xl font-black"><?php echo $service['service_code']; ?></span>
+                        <div class="px-5 md:px-8 pt-6 md:pt-8 3xl:pt-10 pb-2 md:pb-3 relative overflow-hidden">
+                            <div class="bg-primary-600 w-10 md:w-12 h-10 md:h-12 3xl:w-16 3xl:h-16 rounded-lg md:rounded-xl 3xl:rounded-[24px] flex items-center justify-center text-white shadow-lg shadow-primary-100 mb-3 md:mb-4 group-hover:rotate-6 transition-transform">
+                                <span class="text-sm md:text-lg 3xl:text-2xl font-black"><?php echo $counter; ?></span>
                             </div>
-                            <h3 class="text-lg md:text-2xl 3xl:text-4xl font-black text-gray-900 font-heading leading-tight tracking-tight"><?php echo $service['service_name']; ?></h3>
+                            <h3 class="text-md md:text-xl 3xl:text-2xl font-black text-gray-900 font-heading leading-tight tracking-tight"><?php echo $service['service_name']; ?></h3>
                             
                             <!-- BG Abstract Text -->
-                            <div class="absolute -right-4 top-0 text-6xl md:text-7xl 3xl:text-9xl font-black text-slate-50 opacity-50 select-none pointer-events-none"><?php echo $service['service_code']; ?></div>
+                            <div class="absolute -right-2 top-0 text-5xl md:text-6xl 3xl:text-8xl font-black text-slate-50 opacity-50 select-none pointer-events-none"><?php echo $counter; ?></div>
                         </div>
                         
-                        <!-- Card Content -->
-                        <div class="px-6 md:px-10 pb-6 md:pb-10 3xl:pb-14 space-y-4 md:space-y-6 3xl:space-y-10">
-                            <p class="text-xs md:text-sm text-gray-500 font-medium leading-relaxed 3xl:text-xl"><?php echo nl2br(htmlspecialchars($service['description'])); ?></p>
-                            
-                            <div class="space-y-3 3xl:space-y-5 pt-6 3xl:pt-10 border-t border-slate-50">
-                                <div class="flex items-start space-x-3">
-                                    <i class="fas fa-clipboard-check text-primary-600 mt-1 3xl:text-2xl"></i>
+                        <!-- Card Content Wrapper -->
+                        <div class="px-5 md:px-8 flex flex-col flex-grow">
+                            <!-- Body: Expands to fill space -->
+                            <div class="flex-grow space-y-4 pt-4 border-t border-slate-50">
+                                <div class="flex items-start space-x-2">
+                                    <i class="fas fa-clipboard-check text-primary-600 mt-1 3xl:text-xl text-[10px]"></i>
                                     <div class="flex-1">
-                                        <p class="text-[10px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Requirements</p>
-                                        <div class="space-y-1.5 3xl:space-y-3">
+                                        <p class="text-[8px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Requirements</p>
+                                        <div class="space-y-1 3xl:space-y-2">
                                             <?php 
                                             $reqs = preg_split('/[,\n\r]+/', $service['requirements']);
                                             foreach ($reqs as $req): 
                                                 $req = trim($req);
                                                 if (empty($req)) continue;
                                             ?>
-                                                <div class="flex items-start space-x-2 text-sm 3xl:text-lg font-bold text-gray-700">
-                                                    <i class="fas fa-check-circle text-primary-500 mt-1 text-[10px] 3xl:text-sm"></i>
+                                                <div class="flex items-start space-x-2 text-[10px] md:text-xs 3xl:text-base font-bold text-gray-700">
+                                                    <i class="fas fa-check-circle text-primary-500 mt-0.5 text-[8px] 3xl:text-xs"></i>
                                                     <span><?php echo htmlspecialchars($req); ?></span>
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-bolt text-amber-500 3xl:text-2xl"></i>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-bolt text-amber-500 text-[10px] 3xl:text-xl"></i>
                                     <div>
-                                        <p class="text-[10px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Process Time</p>
-                                        <p class="text-sm 3xl:text-lg font-black text-gray-900">Est. <?php echo $service['estimated_time']; ?> Minutes</p>
+                                        <p class="text-[8px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">Process Time</p>
+                                        <p class="text-[10px] md:text-xs 3xl:text-lg font-black text-gray-900">Est. <?php echo $ticketModel->getAverageProcessTime($service['id']); ?> Minutes</p>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <form method="POST" action="">
-                                <input type="hidden" name="service_id" value="<?php echo $service['id']; ?>">
-                                
+
                                 <?php if ($service['service_code'] === 'GEN-INQ'): ?>
-                                    <div class="mb-4">
-                                        <label for="note-<?php echo $service['id']; ?>" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Note (Optional)</label>
-                                        <textarea id="note-<?php echo $service['id']; ?>" name="user_note" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none" placeholder="Please briefly specify your concern..." rows="3"></textarea>
+                                    <div class="pt-4 border-t border-slate-50">
+                                        <label for="note-<?php echo $service['id']; ?>" class="block text-[8px] md:text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Note (Optional)</label>
+                                        <textarea id="note-<?php echo $service['id']; ?>" form="form-<?php echo $service['id']; ?>" name="user_note" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-[10px] font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none" placeholder="Please briefly specify your concern..." rows="2"></textarea>
                                     </div>
                                 <?php endif; ?>
-
-                                <button type="submit" class="w-full bg-slate-900 text-white py-3 md:py-5 3xl:py-8 rounded-xl md:rounded-[24px] 3xl:rounded-[32px] font-black text-sm md:text-lg 3xl:text-2xl shadow-xl shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center space-x-2 md:space-x-3">
-                                    <span>Get This Ticket</span>
+                            </div>
+                            
+                            <!-- Footer: Stays pinned to the bottom -->
+                            <form id="form-<?php echo $service['id']; ?>" method="POST" action="" class="pb-8 md:pb-10 pt-6">
+                                <input type="hidden" name="service_id" value="<?php echo $service['id']; ?>">
+                                <button type="submit" class="w-full bg-slate-900 text-white py-3 md:py-4 3xl:py-6 rounded-lg md:rounded-xl 3xl:rounded-2xl font-black text-xs md:text-sm 3xl:text-xl shadow-lg shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                    <span>Get Ticket</span>
                                     <i class="fas fa-ticket-alt"></i>
                                 </button>
                             </form>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php $counter++; endforeach; ?>
             </div>
         <?php endif; ?>
         </div><!-- End Walk-in Content -->
@@ -184,60 +183,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
         <!-- Appointment Tab Content -->
         <div id="appointmentContent" class="tab-content hidden">
             <!-- Service Cards for Appointment -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-8">
-                    <?php foreach ($services as $service): ?>
-                        <div class="bg-white rounded-[32px] md:rounded-[40px] 3xl:rounded-[56px] shadow-division border border-white hover:shadow-premium hover:-translate-y-2 transition-all duration-500 overflow-hidden group">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-6">
+                    <?php $counter = 1; foreach ($services as $service): ?>
+                        <div class="bg-white rounded-[24px] md:rounded-[32px] 3xl:rounded-[48px] shadow-division border border-white hover:shadow-premium hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col h-full group">
                             <!-- Card Header -->
-                            <div class="px-6 md:px-10 pt-6 md:pt-10 3xl:pt-14 pb-4 md:pb-6 relative overflow-hidden">
-                                <div class="bg-primary-600 w-12 md:w-16 h-12 md:h-16 3xl:w-20 3xl:h-20 rounded-xl md:rounded-2xl 3xl:rounded-[28px] flex items-center justify-center text-white shadow-lg shadow-primary-100 mb-4 md:mb-6 group-hover:rotate-6 transition-transform">
-                                    <span class="text-base md:text-xl 3xl:text-3xl font-black"><?php echo $service['service_code']; ?></span>
+                            <div class="px-5 md:px-8 pt-6 md:pt-8 3xl:pt-10 pb-2 md:pb-3 relative overflow-hidden">
+                                <div class="bg-primary-600 w-10 md:w-12 h-10 md:h-12 3xl:w-16 3xl:h-16 rounded-lg md:rounded-xl 3xl:rounded-[24px] flex items-center justify-center text-white shadow-lg shadow-primary-100 mb-3 md:mb-4 group-hover:rotate-6 transition-transform">
+                                    <span class="text-sm md:text-lg 3xl:text-2xl font-black"><?php echo $counter; ?></span>
                                 </div>
-                                <h3 class="text-lg md:text-2xl 3xl:text-4xl font-black text-gray-900 font-heading leading-tight tracking-tight"><?php echo $service['service_name']; ?></h3>
+                                <h3 class="text-md md:text-xl 3xl:text-2xl font-black text-gray-900 font-heading leading-tight tracking-tight"><?php echo $service['service_name']; ?></h3>
                                 
                                 <!-- BG Abstract Text -->
-                                <div class="absolute -right-4 top-0 text-6xl md:text-7xl 3xl:text-9xl font-black text-slate-50 opacity-50 select-none pointer-events-none"><?php echo $service['service_code']; ?></div>
+                                <div class="absolute -right-2 top-0 text-5xl md:text-6xl 3xl:text-8xl font-black text-slate-50 opacity-50 select-none pointer-events-none"><?php echo $counter; ?></div>
                             </div>
                             
-                            <!-- Card Content -->
-                            <div class="px-6 md:px-10 pb-6 md:pb-10 3xl:pb-14 space-y-4 md:space-y-6 3xl:space-y-10">
-                                <p class="text-xs md:text-sm text-gray-500 font-medium leading-relaxed 3xl:text-xl"><?php echo nl2br(htmlspecialchars($service['description'])); ?></p>
-                                
-                                <div class="space-y-3 3xl:space-y-5 pt-6 3xl:pt-10 border-t border-slate-50">
-                                    <div class="flex items-start space-x-3">
-                                        <i class="fas fa-clipboard-check text-primary-600 mt-1 3xl:text-2xl"></i>
+                            <!-- Card Content Wrapper -->
+                            <div class="px-5 md:px-8 flex flex-col flex-grow">
+                                <!-- Body: Expands to fill space -->
+                                <div class="flex-grow space-y-4 pt-4 border-t border-slate-50">
+                                    <div class="flex items-start space-x-2">
+                                        <i class="fas fa-clipboard-check text-primary-600 mt-1 3xl:text-xl text-[10px]"></i>
                                         <div class="flex-1">
-                                            <p class="text-[10px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Requirements</p>
-                                            <div class="space-y-1.5 3xl:space-y-3">
+                                            <p class="text-[8px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Requirements</p>
+                                            <div class="space-y-1 3xl:space-y-2">
                                                 <?php 
                                                 $reqs = preg_split('/[,\n\r]+/', $service['requirements']);
                                                 foreach ($reqs as $req): 
                                                     $req = trim($req);
                                                     if (empty($req)) continue;
                                                 ?>
-                                                    <div class="flex items-start space-x-2 text-sm 3xl:text-lg font-bold text-gray-700">
-                                                        <i class="fas fa-check-circle text-primary-500 mt-1 text-[10px] 3xl:text-sm"></i>
+                                                    <div class="flex items-start space-x-2 text-[10px] md:text-xs 3xl:text-base font-bold text-gray-700">
+                                                        <i class="fas fa-check-circle text-primary-500 mt-0.5 text-[8px] 3xl:text-xs"></i>
                                                         <span><?php echo htmlspecialchars($req); ?></span>
                                                     </div>
                                                 <?php endforeach; ?>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-3">
-                                        <i class="fas fa-bolt text-amber-500 3xl:text-2xl"></i>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-bolt text-amber-500 text-[10px] 3xl:text-xl"></i>
                                         <div>
-                                            <p class="text-[10px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Process Time</p>
-                                            <p class="text-sm 3xl:text-lg font-black text-gray-900">Est. <?php echo $service['estimated_time']; ?> Minutes</p>
+                                            <p class="text-[8px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">Process Time</p>
+                                            <p class="text-[10px] md:text-xs 3xl:text-lg font-black text-gray-900">Est. <?php echo $ticketModel->getAverageProcessTime($service['id']); ?> Minutes</p>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <button onclick="openAppointmentModal(<?php echo $service['id']; ?>, '<?php echo htmlspecialchars($service['service_name']); ?>')" class="w-full bg-slate-900 text-white py-3 md:py-5 3xl:py-8 rounded-xl md:rounded-[24px] 3xl:rounded-[32px] font-black text-sm md:text-lg 3xl:text-2xl shadow-xl shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center space-x-2 md:space-x-3">
-                                    <span>Schedule Ticket</span>
-                                    <i class="fas fa-calendar-check"></i>
-                                </button>
-                            </form>
+
+                                <!-- Footer: Stays pinned to the bottom -->
+                                <div class="pb-8 md:pb-10 pt-6">
+                                    <button onclick="openAppointmentModal(<?php echo $service['id']; ?>, '<?php echo htmlspecialchars($service['service_name']); ?>')" class="w-full bg-slate-900 text-white py-3 md:py-4 3xl:py-6 rounded-lg md:rounded-xl 3xl:rounded-2xl font-black text-xs md:text-sm 3xl:text-xl shadow-lg shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                        <span>Schedule Ticket</span>
+                                        <i class="fas fa-calendar-check"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    <?php endforeach; ?>
+                    <?php $counter++; endforeach; ?>
                 </div>
         </div>
 

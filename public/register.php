@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Form Side -->
         <div class="p-8 md:p-16 lg:p-20 flex flex-col justify-center bg-primary-950/10 order-2 lg:order-1">
             <div class="mb-10 text-center lg:text-left">
-                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-primary-500 mb-3">Protocol: Synchronization</p>
-                <h2 class="text-4xl font-black text-white mb-3 font-heading tracking-tight">Create Identity</h2>
-                <p class="text-gray-500 font-medium">Synchronize with our high-frequency queueing grid.</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-primary-500 mb-3">Protocol: Registration</p>
+                <h2 class="text-4xl font-black text-white mb-3 font-heading tracking-tight">Register</h2>
+                <p class="text-gray-500 font-medium">Create your account to join the queueing system.</p>
             </div>
 
             <?php if (isset($error)): ?>
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     <div class="space-y-2 text-left">
-                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="full_name">Legal Name</label>
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="full_name">Full Name</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                 <i class="fas fa-id-card text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                     <div class="space-y-2 text-left">
-                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="school_id">Local ID</label>
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="school_id">School ID</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                 <i class="fas fa-id-badge text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="space-y-2 text-left">
-                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Digital Envelope</label>
+                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Email</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                             <i class="fas fa-envelope-open-text text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     <div class="space-y-2 text-left">
-                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="password">Access key</label>
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="password">Password</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                 <i class="fas fa-key text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                     <div class="space-y-2 text-left">
-                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="confirm_password">Verify Key</label>
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="confirm_password">Confirm Password</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                 <i class="fas fa-shield-check text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
@@ -148,14 +148,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" class="w-full bg-primary-600 text-white font-black py-5 rounded-2xl shadow-2xl shadow-primary-900/20 hover:bg-primary-500 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center space-x-4 text-lg">
-                    <span>SYNCHRONIZE NOW</span>
+                    <span>REGISTER</span>
                     <i class="fas fa-magic text-sm opacity-50"></i>
                 </button>
             </form>
 
             <div class="mt-10 pt-8 border-t border-primary-500/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-gray-500 font-medium text-xs">Synchronized already?</p>
-                <a href="login.php" class="bg-primary-500/5 hover:bg-primary-500/10 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] border border-primary-500/30 transition-all active:scale-95">Access Terminal</a>
+                <p class="text-gray-500 font-medium text-xs">Already have an account?</p>
+                <a href="login.php" class="bg-primary-500/5 hover:bg-primary-500/10 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] border border-primary-500/30 transition-all active:scale-95">Login</a>
             </div>
         </div>
 

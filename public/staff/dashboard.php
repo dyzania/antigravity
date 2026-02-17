@@ -15,11 +15,8 @@ $servingTicket = null;
 $waitingTickets = [];
 
 if ($window) {
-    // Automatically set window as active and enable all services ONLY ONCE per session
-    // This allows manual changes to persist after refreshing the page
     if (!isset($_SESSION['window_initialized'])) {
         $windowModel->setWindowStatus($window['id'], true);
-        $windowModel->enableAllServices($window['id']);
         $_SESSION['window_initialized'] = true;
     }
     
@@ -109,19 +106,25 @@ if ($window) {
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                         <div>
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Avg. Speed</p>
-                            <h4 class="text-2xl font-black text-slate-900"><?php echo $staffStats['avg_processing_time']; ?></h4>
+                            <h4 class="text-2xl font-black text-slate-900">
+                                <?php echo $staffStats['avg_processing_time']; ?>
+                            </h4>
                         </div>
-                        <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
                             <i class="fas fa-bolt text-xl"></i>
                         </div>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Customer Mood</p>
-                            <h4 class="text-2xl font-black text-slate-900"><?php echo $staffStats['avg_rating']; ?> <span class="text-xs text-slate-400">/ 5</span></h4>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Services Offline</p>
+                            <?php 
+                                $allServices = $windowModel->getWindowServices($window['id']);
+                                $offlineCount = count(array_filter($allServices, function($s) { return !$s['is_enabled']; }));
+                            ?>
+                            <h4 class="text-2xl font-black text-secondary-600"><?php echo $offlineCount; ?></h4>
                         </div>
-                        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500">
-                            <i class="fas fa-smile text-xl"></i>
+                        <div class="w-12 h-12 bg-secondary-50 rounded-xl flex items-center justify-center text-secondary-500">
+                            <i class="fas fa-toggle-off text-xl"></i>
                         </div>
                     </div>
                 </div>
@@ -664,16 +667,18 @@ if ($window) {
         const STAGNANT_THRESHOLD = 15 * 60; // 15 minutes in seconds
         
         // Notification Sound (Simple clean alert)
-        const alertSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-        alertSound.volume = 0.7;
+        // const alertSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        // alertSound.volume = 0.7;
 
         // Browsers block audio until first interaction
+        /*
         document.addEventListener('mousedown', () => {
-            if (alertSound.paused && alertSound.currentTime === 0) {
-                // "Prime" the audio on first click
-                alertSound.play().catch(e => console.log('Audio autoplay prevented:', e));
-            }
+             if (alertSound.paused && alertSound.currentTime === 0) {
+                 // "Prime" the audio on first click
+                 alertSound.play().catch(e => console.log('Audio autoplay prevented:', e));
+             }
         }, { once: true });
+        */
 
         function getWaitingTicketCount() {
             const container = document.getElementById('waiting-tickets-container');

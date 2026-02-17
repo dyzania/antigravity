@@ -38,7 +38,7 @@ $services = $windowModel->getWindowServices($window['id']);
                     <h2 class="text-2xl font-bold text-gray-800">
                         <i class="fas fa-list-check text-primary mr-2"></i> Managed Services
                     </h2>
-                    <p class="text-gray-600 mt-1">Toggle the services you can handle at this window.</p>
+                    <p class="text-gray-600 mt-1">Toggle the services you can handle. <strong>Note:</strong> These settings are absolute and will persist across shifts.</p>
                 </div>
                 
                 <div class="px-6 pb-6 space-y-4">

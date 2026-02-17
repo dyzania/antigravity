@@ -10,6 +10,7 @@ requireRole('user');
 $ticketModel = new Ticket();
 $feedbackModel = new Feedback();
 
+$now = time();
 $ticket = $ticketModel->getCurrentTicket(getUserId());
 
 // Helper function to format duration in seconds to "Xh Ym Zs"
@@ -34,9 +35,29 @@ if (!$ticket) {
 }
 
 $position = $ticket ? $ticketModel->getGlobalQueuePosition($ticket['id']) : 0;
-// Use new weighted wait time calculation
-$estimatedWaitSeconds = $ticket ? $ticketModel->getWeightedEstimatedWaitTime($ticket['id']) : 0;
+$initialPosition = $ticket ? $ticketModel->getInitialQueuePosition($ticket['id']) : 0;
+
+// Use new Advanced Wait Time calculation
+$estimatedWaitSeconds = $ticket ? $ticketModel->getAdvancedEstimatedWaitTime($ticket['id'], $now) : 0;
 $estimatedWait = formatDuration(round($estimatedWaitSeconds));
+
+// Average Processing Time (APT)
+$avgProcessSeconds = $ticket ? $ticketModel->getPreciseAverageProcessTime($ticket['service_id']) : null;
+
+$isWaiting = $ticket && $ticket['status'] === 'waiting';
+$isCalled = $ticket && $ticket['status'] === 'called';
+$isServing = $ticket && $ticket['status'] === 'serving';
+$isCompleted = $ticket && $ticket['status'] === 'completed';
+
+// Calculate remaining time for serving state in PHP to prevent reset on refresh
+$servingRemainingSeconds = null;
+if ($isServing && $avgProcessSeconds && $ticket['served_at']) {
+    $elapsed = time() - strtotime($ticket['served_at']);
+    $servingRemainingSeconds = max(0, $avgProcessSeconds - $elapsed);
+}
+
+$avgProcessTimeFormatted = $avgProcessSeconds ? formatDuration($avgProcessSeconds) : "";
+$servingRemainingTimeFormatted = ($servingRemainingSeconds !== null) ? formatDuration($servingRemainingSeconds) : $avgProcessTimeFormatted;
 
 $feedbackGiven = $ticket ? $feedbackModel->getFeedbackByTicket($ticket['id']) : null;
 $history = $ticketModel->getUserTicketHistory(getUserId());
@@ -106,15 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                     <span class="w-2.5 h-2.5 md:w-5 md:h-5 rounded-full <?php echo $isCompleted ? 'bg-secondary-500' : 'bg-primary-500'; ?> animate-ping"></span>
                                     <span class="text-xl md:text-4xl font-black uppercase tracking-[0.2em] <?php echo $isCompleted ? 'text-secondary-300' : 'text-primary-300'; ?>">
                                         <?php 
-                                            if ($ticket['is_archived'] == 1 && $ticket['status'] !== 'completed') {
-                                                echo "NOW SERVING";
-                                            } elseif ($ticket['status'] === 'called') {
-                                                echo "CALLED";
-                                            } elseif ($ticket['status'] === 'serving') {
-                                                echo "SERVING";
-                                            } else {
-                                                echo strtoupper($ticket['status']);
-                                            }
+                                            if ($isCompleted) echo "COMPLETED";
+                                            elseif ($isCalled) echo "PROCEED";
+                                            elseif ($isServing) echo "SERVING";
+                                            else echo strtoupper($ticket['status']);
                                         ?>
                                     </span>
                                 </div>
@@ -128,24 +144,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                 <h3 class="text-base md:text-3xl font-black font-heading mb-4 md:mb-8 leading-tight opacity-50 text-center md:text-left"><?php echo $ticket['service_name']; ?></h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-4 md:gap-8">
                                     <div class="px-6 md:px-12 py-4 md:py-10 bg-white/5 rounded-[22px] md:rounded-[32px] border border-white/10 flex items-center space-x-5 md:space-x-8 backdrop-blur-xl group/box">
-                                        <i class="fas fa-user-friends text-white text-xl md:text-5xl shrink-0 group-hover/box:scale-110 transition-transform"></i>
+                                        <i class="fas <?php echo ($isCompleted) ? 'fa-history' : 'fa-user-friends'; ?> text-white text-xl md:text-5xl shrink-0 group-hover/box:scale-110 transition-transform"></i>
                                         <div class="flex flex-col">
-                                            <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white opacity-60 mb-1 md:mb-2">Queue Position</span>
+                                            <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white opacity-60 mb-1 md:mb-2">
+                                                <?php 
+                                                    if ($isWaiting) echo "Queue Position";
+                                                    elseif ($isCalled) echo "Queue Status";
+                                                    elseif ($isServing) echo "Queue Status";
+                                                    elseif ($isCompleted) echo "Started at Position";
+                                                ?>
+                                            </span>
                                             <div class="flex items-baseline space-x-3">
-                                                <span id="ticket-queue-position" class="text-2xl md:text-5xl font-black <?php echo ($ticket['status'] === 'waiting') ? 'text-amber-300' : 'text-white'; ?>">
+                                                <span class="text-2xl md:text-5xl font-black <?php echo ($isWaiting) ? 'text-amber-300' : 'text-white'; ?>">
                                                     <?php 
-                                                        if ($ticket['is_archived'] == 1 && $ticket['status'] !== 'completed') {
-                                                            echo "SERVING";
-                                                        } elseif ($ticket['status'] === 'called') {
-                                                            echo "NOW";
-                                                        } elseif ($ticket['status'] === 'serving') {
-                                                            echo "SERVING";
-                                                        } else {
-                                                            echo '#' . ($position + 1);
-                                                        }
+                                                        if ($isWaiting) echo '#' . ($position + 1);
+                                                        elseif ($isCalled) echo "PROCEED";
+                                                        elseif ($isServing) echo "SERVING";
+                                                        elseif ($isCompleted) echo '#' . $initialPosition;
                                                     ?>
                                                 </span>
-                                                <?php if ($ticket['status'] === 'waiting'): ?>
+                                                <?php if ($isWaiting): ?>
                                                     <span class="text-[10px] md:text-lg font-bold text-amber-300">
                                                         (<?php echo $position; ?> ahead)
                                                     </span>
@@ -153,17 +171,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="px-6 md:px-12 py-4 md:py-10 bg-white/5 rounded-[22px] md:rounded-[32px] border border-white/10 flex items-center space-x-5 md:space-x-8 backdrop-blur-xl group/box">
                                         <i class="fas fa-clock text-white text-xl md:text-5xl shrink-0 group-hover/box:scale-110 transition-transform"></i>
                                         <div class="flex flex-col w-full">
                                             <div class="flex flex-col gap-3 md:gap-5">
                                                 <div>
-                                                    <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white/60 mb-1 md:mb-2 block">Est. Process Time</span>
-                                                    <span class="text-[12px] md:text-2xl font-bold text-amber-200/80 tracking-tight leading-none block">~<?php echo $ticket['estimated_time'] ?? '10'; ?>m / person</span>
+                                                    <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white/60 mb-1 md:mb-2 block">
+                                                        <?php echo $isCompleted ? "Total Waiting Time" : "Avg. Process Time"; ?>
+                                                    </span>
+                                                    <?php if ($isCompleted): ?>
+                                                        <?php 
+                                                            $totalWaitSeconds = strtotime($ticket['completed_at']) - strtotime($ticket['created_at']);
+                                                            echo '<span class="text-[12px] md:text-2xl font-bold text-amber-200/80 tracking-tight leading-none block">' . formatDuration($totalWaitSeconds) . '</span>';
+                                                        ?>
+                                                    <?php else: ?>
+                                                        <span class="text-[12px] md:text-2xl font-bold text-amber-200/80 tracking-tight leading-none block">
+                                                            <?php echo $avgProcessTimeFormatted ? "~$avgProcessTimeFormatted / person" : ""; ?>
+                                                        </span>
+                                                    <?php endif; ?>
                                                 </div>
                                                 <div class="pt-3 md:pt-5 border-t border-white/10">
-                                                    <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white mb-1 md:mb-2 block">Your Waiting Time</span>
-                                                    <span id="ticket-estimated-wait" class="text-2xl md:text-5xl font-black text-amber-300 leading-none block"><?php echo $estimatedWait; ?></span>
+                                                    <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white mb-1 md:mb-2 block">
+                                                        <?php 
+                                                            if ($isServing) echo "Estimated Process Time";
+                                                            elseif ($isCompleted) echo "Total Service Processed";
+                                                            else echo "Estimated Waiting Time";
+                                                        ?>
+                                                    </span>
+                                                    <span id="ticket-metric-secondary" 
+                                                          class="text-2xl md:text-5xl font-black text-amber-300 leading-none block"
+                                                          data-live-countdown="1"
+                                                          data-ticket-id="<?php echo $ticket['id']; ?>"
+                                                          <?php 
+                                                            $targetTimestampMs = 0;
+                                                            if ($isServing && $avgProcessSeconds) {
+                                                                $targetTimestampMs = (strtotime($ticket['served_at']) + $avgProcessSeconds) * 1000;
+                                                            } elseif (($isWaiting || $isCalled) && $estimatedWaitSeconds > 0) {
+                                                                $targetTimestampMs = ($now + $estimatedWaitSeconds) * 1000;
+                                                            }
+                                                          ?>
+                                                          <?php if ($targetTimestampMs > 0): ?>
+                                                            data-target-timestamp="<?php echo (int)round($targetTimestampMs); ?>"
+                                                            data-server-now="<?php echo $now * 1000; ?>"
+                                                            <?php if ($isServing): ?>data-is-serving="1"<?php endif; ?>
+                                                          <?php endif; ?>>
+                                                        <?php 
+                                                            if ($isServing) echo $servingRemainingTimeFormatted ?: "-";
+                                                            elseif ($isCompleted) {
+                                                                $totalServiceSeconds = strtotime($ticket['completed_at']) - strtotime($ticket['served_at']);
+                                                                echo formatDuration($totalServiceSeconds);
+                                                            }
+                                                            else echo $estimatedWait;
+                                                        ?>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -331,10 +392,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
         <?php endif; ?>
     </main>
 
+    <script src="<?php echo BASE_URL; ?>/js/live-countdown.js"></script>
     <script>
         // Initialize silent auto-refresh moved to bottom for reliability
 
-        <?php if ($ticket): ?>
         function getTicketMetaData() {
             // Helper to extract current state for LiveStatus
             const ticketNum = <?php echo json_encode($ticket['ticket_number'] ?? ''); ?>;
@@ -343,23 +404,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             const windowNum = <?php echo json_encode($ticket['window_number'] ?? ''); ?>;
             const windowName = <?php echo json_encode($ticket['window_name'] ?? ''); ?>;
             
-            // Reach into DOM for dynamic values (position/wait)
-            const posText = document.getElementById('ticket-queue-position')?.textContent || "0";
-            const pos = parseInt(posText.replace('#', '')) - 1;
-            const waitText = document.getElementById('ticket-estimated-wait')?.textContent || "0";
-            const wait = parseInt(waitText.replace('~', '').replace(' Minutes', '').replace('m wait', ''));
-
             return {
                 ticket_number: ticketNum,
                 service_name: serviceName,
                 status: status,
                 window_number: windowNum,
-                window_name: windowName,
-                position: isNaN(pos) ? 0 : pos,
-                estimated_wait: isNaN(wait) ? 0 : wait
+                window_name: windowName
             };
         }
-        <?php endif; ?>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Re-initialize if dashboard refreshes - Handled by LiveCountdown class
+        });
 
         async function snoozeTicket(ticketId) {
             if (!await equeueConfirm('Moving your ticket back by 3 spots will give you more time. Proceed?', 'Snooze Ticket')) return;
@@ -443,8 +499,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             document.addEventListener('DOMContentLoaded', () => {
                 if (typeof DashboardRefresh !== 'undefined') {
                     const refresh = new DashboardRefresh(['ticket-main-content'], 3000);
-                } else {
-                    console.error('E-Queue: DashboardRefresh library failed to load.');
                 }
             });
         }

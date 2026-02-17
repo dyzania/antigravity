@@ -42,14 +42,14 @@ class Service {
         return $stmt->fetch();
     }
     
-    public function createService($serviceName, $serviceCode, $description, $requirements, $estimatedTime, $staffNotes = null) {
+    public function createService($serviceName, $serviceCode, $description, $requirements, $staffNotes = null, $targetTime = 10) {
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO services (service_name, service_code, description, requirements, estimated_time, staff_notes) 
+                INSERT INTO services (service_name, service_code, description, requirements, staff_notes, target_time) 
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
             
-            $success = $stmt->execute([$serviceName, $serviceCode, $description, $requirements, $estimatedTime, $staffNotes]);
+            $success = $stmt->execute([$serviceName, $serviceCode, $description, $requirements, $staffNotes, $targetTime]);
             
             if ($success) {
                 return ['success' => true, 'message' => 'Service created successfully.'];
@@ -64,14 +64,14 @@ class Service {
         }
     }
     
-    public function updateService($id, $serviceName, $serviceCode, $description, $requirements, $estimatedTime, $staffNotes = null) {
+    public function updateService($id, $serviceName, $serviceCode, $description, $requirements, $staffNotes = null, $targetTime = 10) {
         $stmt = $this->db->prepare("
             UPDATE services 
-            SET service_name = ?, service_code = ?, description = ?, requirements = ?, estimated_time = ?, staff_notes = ?
+            SET service_name = ?, service_code = ?, description = ?, requirements = ?, staff_notes = ?, target_time = ?
             WHERE id = ?
         ");
         
-        return $stmt->execute([$serviceName, $serviceCode, $description, $requirements, $estimatedTime, $staffNotes, $id]);
+        return $stmt->execute([$serviceName, $serviceCode, $description, $requirements, $staffNotes, $targetTime, $id]);
     }
     
     public function toggleServiceStatus($id) {

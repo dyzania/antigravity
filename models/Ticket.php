@@ -118,7 +118,7 @@ class Ticket {
     
     public function getCurrentTicket($userId) {
         $stmt = $this->db->prepare("
-            SELECT t.*, s.service_name, s.service_code, s.requirements, s.estimated_time, w.window_number, w.window_name, w.location_info,
+            SELECT t.*, s.service_name, s.service_code, s.requirements, s.target_time, w.window_number, w.window_name, w.location_info,
                    u.full_name as user_name, u.email as user_email
             FROM tickets t
             JOIN services s ON t.service_id = s.id
@@ -185,61 +185,154 @@ class Ticket {
         return $result['position'];
     }
 
-    public function getWeightedEstimatedWaitTime($ticketId) {
-        $stmt = $this->db->prepare("
-            SELECT created_at, service_id 
-            FROM tickets 
-            WHERE id = ?
-        ");
+    /**
+     * Advanced Constraint-Aware Wait Time Calculation
+     * Distributes preceding tickets across eligible windows based on service toggles and current workload.
+     */
+    public function getAdvancedEstimatedWaitTime($ticketId, $timestamp = null) {
+        $now = $timestamp ?: time();
+        $stmt = $this->db->prepare("SELECT service_id, created_at FROM tickets WHERE id = ?");
         $stmt->execute([$ticketId]);
-        $targetTicket = $stmt->fetch();
-        if (!$targetTicket) return 0;
+        $target = $stmt->fetch();
+        if (!$target) return 0;
 
-        $serviceId = $targetTicket['service_id'];
+        $targetServiceId = $target['service_id'];
+        $targetCreatedAt = $target['created_at'];
 
-        // 1. Total estimated service time of all waiting tickets ahead (Global queue sequence)
+        // 1. Get all Active Windows and their supported services
+        $stmt = $this->db->query("SELECT id FROM windows WHERE is_active = 1");
+        $activeWindows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (empty($activeWindows)) return 0;
+
+        $windowServices = [];
+        $stmt = $this->db->prepare("SELECT service_id FROM window_services WHERE window_id = ? AND is_enabled = 1");
+        foreach ($activeWindows as $wId) {
+            $stmt->execute([$wId]);
+            $windowServices[$wId] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        }
+
+        // 2. Initialize Window Workloads with current active transactions
+        $workloads = array_fill_keys($activeWindows, 0);
         $stmt = $this->db->prepare("
-            SELECT SUM(s.estimated_time * 60) as waiting_workload
+            SELECT t.window_id, t.service_id, s.target_time, t.served_at, t.called_at, t.status
+            FROM tickets t
+            JOIN services s ON t.service_id = s.id
+            WHERE t.status IN ('serving', 'called') AND t.window_id IN (" . implode(',', $activeWindows) . ")
+        ");
+        $stmt->execute();
+        $currentlyActive = $stmt->fetchAll();
+
+        $serviceApts = []; // Shared cache for simulation
+
+        foreach ($currentlyActive as $active) {
+            $status = $active['status'];
+            $startTime = ($status === 'serving') ? $active['served_at'] : $active['called_at'];
+            
+            // If miraculously both are null, assume it just started to prevent infinite/huge EWT
+            $elapsed = $startTime ? ($now - strtotime($startTime)) : 0;
+            
+            // Get Performance-Aware Timing (APT)
+            if (!isset($serviceApts[$active['service_id']])) {
+                $apt = $this->getPreciseAverageProcessTime($active['service_id']);
+                $serviceApts[$active['service_id']] = $apt ? $apt : ($active['target_time'] * 60);
+            }
+            $totalEst = $serviceApts[$active['service_id']];
+            
+            // If just called, the window is busy but service hasn't fully started. 
+            // We assume the full service time is still ahead once they start.
+            $remaining = ($status === 'called') ? $totalEst : max(0, $totalEst - $elapsed);
+            $workloads[$active['window_id']] = $remaining;
+        }
+
+        // 3. Fetch all waiting tickets AHEAD of this one (Global Order)
+        $stmt = $this->db->prepare("
+            SELECT t.service_id, s.target_time
             FROM tickets t
             JOIN services s ON t.service_id = s.id
             WHERE t.status = 'waiting'
             AND (t.created_at < ? OR (t.created_at = ? AND t.id < ?))
+            ORDER BY t.created_at ASC, t.id ASC
         ");
-        $stmt->execute([$targetTicket['created_at'], $targetTicket['created_at'], $ticketId]);
-        $waitingWorkload = $stmt->fetch()['waiting_workload'] ?? 0;
+        $stmt->execute([$targetCreatedAt, $targetCreatedAt, $ticketId]);
+        $precedingTickets = $stmt->fetchAll();
 
-        // 2. Remaining processing time of active transactions at windows that support THIS service
-        // We count any ticket being served at a window that is capable of serving our service
+        // 4. Simulate distribution
+
+        foreach ($precedingTickets as $t) {
+            $sId = $t['service_id'];
+            
+            // Get Performance-Aware Timing (APT)
+            if (!isset($serviceApts[$sId])) {
+                $apt = $this->getPreciseAverageProcessTime($sId);
+                $serviceApts[$sId] = $apt ? $apt : ($t['target_time'] * 60);
+            }
+            $estTime = $serviceApts[$sId];
+            
+            // Find eligible windows for THIS ticket's service
+            $eligibleWindows = [];
+            foreach ($windowServices as $wId => $supportedServices) {
+                if (in_array($sId, $supportedServices)) {
+                    $eligibleWindows[] = $wId;
+                }
+            }
+
+            if (!empty($eligibleWindows)) {
+                // Find eligible window with lowest workload
+                $bestWindow = $eligibleWindows[0];
+                $minWorkload = $workloads[$bestWindow];
+                foreach ($eligibleWindows as $wId) {
+                    if ($workloads[$wId] < $minWorkload) {
+                        $minWorkload = $workloads[$wId];
+                        $bestWindow = $wId;
+                    }
+                }
+                $workloads[$bestWindow] += $estTime;
+            }
+        }
+
+        // 5. Final EWT is the MIN workload among windows supporting TARGET service
+        $targetEligibleWorkloads = [];
+        foreach ($windowServices as $wId => $supportedServices) {
+            if (in_array($targetServiceId, $supportedServices)) {
+                $targetEligibleWorkloads[] = $workloads[$wId];
+            }
+        }
+
+        if (empty($targetEligibleWorkloads)) return 0;
+        return min($targetEligibleWorkloads);
+    }
+
+    public function getPreciseAverageProcessTime($serviceId) {
         $stmt = $this->db->prepare("
-            SELECT SUM(GREATEST((s.estimated_time * 60) - TIMESTAMPDIFF(SECOND, t.served_at, NOW()), 0)) as active_workload
-            FROM tickets t
-            JOIN services s ON t.service_id = s.id
-            WHERE t.status = 'serving'
-            AND t.served_at IS NOT NULL
-            AND t.window_id IN (
-                SELECT window_id FROM window_services WHERE service_id = ? AND is_enabled = 1
-            )
+            SELECT AVG(TIMESTAMPDIFF(SECOND, served_at, completed_at)) as avg_seconds
+            FROM tickets
+            WHERE service_id = ? AND status = 'completed'
+            AND served_at IS NOT NULL AND completed_at IS NOT NULL
         ");
         $stmt->execute([$serviceId]);
-        $activeWorkload = $stmt->fetch()['active_workload'] ?? 0;
+        $row = $stmt->fetch();
+        return $row['avg_seconds'] ? (int)round($row['avg_seconds']) : null;
+    }
 
-        // 3. Count currently open windows that support THIS service
+    public function getInitialQueuePosition($ticketId) {
+        $stmt = $this->db->prepare("SELECT created_at, status FROM tickets WHERE id = ?");
+        $stmt->execute([$ticketId]);
+        $target = $stmt->fetch();
+        if (!$target) return 0;
+
+        // Count tickets created before this one that were NOT yet completed/cancelled at the time this ticket was created
+        // This represents the "Position in Queue" at the moment they joined.
         $stmt = $this->db->prepare("
-            SELECT COUNT(DISTINCT w.id) as active_windows 
-            FROM windows w
-            JOIN window_services ws ON w.id = ws.window_id
-            WHERE w.is_active = 1 
-            AND ws.service_id = ? 
-            AND ws.is_enabled = 1
+            SELECT COUNT(*) + 1 as pos
+            FROM tickets
+            WHERE created_at <= ? AND id <= ?
+            AND DATE(created_at) = DATE(?)
+            AND (completed_at IS NULL OR completed_at > ?)
+            AND status != 'cancelled'
         ");
-        $stmt->execute([$serviceId]);
-        $activeWindowsCount = $stmt->fetch()['active_windows'] ?? 0;
-
-        // 4. Calculate deterministic wait time: (Waiting Workload + Active Workload) / Active Windows
-        $totalWorkload = $waitingWorkload + $activeWorkload;
-        $activeWindows = max((int)$activeWindowsCount, 1); // Avoid division by zero branch
-
-        return $totalWorkload / $activeWindows;
+        $stmt->execute([$target['created_at'], $ticketId, $target['created_at'], $target['created_at']]);
+        return $stmt->fetch()['pos'] ?? 1;
     }
     
     public function getWaitingQueue($serviceId = null, $windowId = null) {
@@ -269,7 +362,7 @@ class Ticket {
             $params[] = $windowId;
         }
         
-        $query .= " ORDER BY t.created_at ASC";
+        $query .= " ORDER BY t.created_at ASC, t.id ASC";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
@@ -543,7 +636,7 @@ class Ticket {
 
     public function getPendingFeedbackTicket($userId) {
         $stmt = $this->db->prepare("
-            SELECT t.*, s.service_name, s.service_code, s.estimated_time, w.window_number, w.window_name
+            SELECT t.*, s.service_name, s.service_code, s.target_time, w.window_number, w.window_name
             FROM tickets t
             JOIN services s ON t.service_id = s.id
             LEFT JOIN windows w ON t.window_id = w.id
@@ -641,11 +734,11 @@ class Ticket {
     }
 
     public function getAverageProcessTime($serviceId) {
-        // Get the service's default estimated time
-        $stmt = $this->db->prepare("SELECT estimated_time FROM services WHERE id = ?");
+        // Get the service's target time as fallback
+        $stmt = $this->db->prepare("SELECT target_time FROM services WHERE id = ?");
         $stmt->execute([$serviceId]);
         $service = $stmt->fetch();
-        $defaultTime = $service['estimated_time'] ?? 3;
+        $defaultTime = $service['target_time'] ?? 10;
         
         // Get average processing time from recently completed tickets
         $stmt = $this->db->prepare("

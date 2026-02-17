@@ -68,8 +68,8 @@ if (isset($_SESSION['user_id'])) {
                 <a href="#stats" class="hover:text-white transition-colors">Metrics</a>
                 <a href="#about" class="hover:text-white transition-colors">Vision</a>
                 <div class="h-6 w-px bg-white/10 mx-2"></div>
-                <a href="login.php" class="hover:text-primary-400 transition-colors">Sign In</a>
-                <a href="register.php" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-black transition-all hover:bg-primary-500 hover:text-white">Get Started</a>
+                <a href="login.php" class="hover:text-primary-400 transition-colors">Login</a>
+                <a href="register.php" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-black transition-all hover:bg-primary-500 hover:text-white">Register</a>
             </div>
 
             <!-- Mobile Menu Toggle -->
@@ -79,13 +79,13 @@ if (isset($_SESSION['user_id'])) {
 
             <!-- Mobile Menu Dropdown -->
             <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 bg-primary-950/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col space-y-6 lg:hidden animate-in slide-in-from-top-4 duration-300">
-                <a href="#features" class="text-sm font-black uppercase tracking-widest text-gray-400 hover:text-white">Features</a>
-                <a href="#stats" class="text-sm font-black uppercase tracking-widest text-gray-400 hover:text-white">Metrics</a>
-                <a href="#about" class="text-sm font-black uppercase tracking-widest text-gray-400 hover:text-white">Vision</a>
+                <a href="#features" class="text-sm font-black uppercase tracking-widest text-slate-300 hover:text-white">Features</a>
+                <a href="#stats" class="text-sm font-black uppercase tracking-widest text-slate-300 hover:text-white">Metrics</a>
+                <a href="#about" class="text-sm font-black uppercase tracking-widest text-slate-300 hover:text-white">Vision</a>
                 <div class="h-px w-full bg-white/5"></div>
                 <div class="grid grid-cols-2 gap-4 pt-2">
-                    <a href="login.php" class="flex items-center justify-center px-6 py-4 rounded-2xl border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-white/5">Sign In</a>
-                    <a href="register.php" class="flex items-center justify-center px-6 py-4 rounded-2xl bg-primary-600 text-white text-xs font-black uppercase tracking-widest">Get Started</a>
+                    <a href="login.php" class="flex items-center justify-center px-6 py-4 rounded-2xl border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-white/5">Login</a>
+                    <a href="register.php" class="flex items-center justify-center px-6 py-4 rounded-2xl bg-primary-600 text-white text-xs font-black uppercase tracking-widest">Register</a>
                 </div>
             </div>
         </div>
@@ -100,22 +100,22 @@ if (isset($_SESSION['user_id'])) {
                     <span class="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary-400">V2.0 Quantum Edition Now Live</span>
                 </div>
                 
-                <h1 class="text-5xl md:text-[7rem] font-black leading-[0.9] font-heading tracking-tighter mb-8 text-glow">
+                <h1 class="text-5xl md:text-[7rem] font-black leading-[0.9] font-heading tracking-tighter mb-8 text-glow drop-shadow-2xl">
                     ELIMINATE THE <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-500">WAITING LINE.</span>
                 </h1>
                 
-                <p class="text-lg md:text-2xl text-gray-400 font-medium max-w-2xl leading-relaxed mb-12">
+                <p class="text-lg md:text-2xl text-slate-300 font-medium max-w-2xl leading-relaxed mb-12 drop-shadow-md">
                     Experience a revolutionary queue management ecosystem driven by real-time optics and predictive intelligence. Seamless, silent, and superior.
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center gap-6">
                     <a href="register.php" class="w-full sm:w-auto bg-primary-600 text-white px-10 py-6 rounded-2xl font-black text-xl flex items-center justify-center space-x-4 hover:bg-primary-500 transition-all hover:shadow-2xl hover:shadow-primary-500/40 hover:-translate-y-1 active:scale-95 group">
-                        <span>Deploy Now</span>
+                        <span>Register Now</span>
                         <i class="fas fa-rocket group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
                     </a>
                     <a href="#features" class="w-full sm:w-auto bg-white/5 backdrop-blur-md border border-white/10 text-white px-10 py-6 rounded-2xl font-black text-xl flex items-center justify-center space-x-4 hover:bg-white/10 transition-all active:scale-95">
-                        <span>The Experience</span>
+                        <span>Learn More</span>
                         <i class="fas fa-play text-sm opacity-50"></i>
                     </a>
                 </div>

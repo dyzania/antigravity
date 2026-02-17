@@ -109,8 +109,8 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
         <div class="p-8 md:p-20 flex flex-col justify-center bg-primary-950/10">
             <div class="mb-12 text-center lg:text-left">
                 <p class="text-[10px] font-black uppercase tracking-[0.5em] text-primary-500 mb-3">Gateway Alpha</p>
-                <h2 class="text-4xl font-black text-white mb-3 font-heading tracking-tight">System Login</h2>
-                <p class="text-gray-500 font-medium">Verify your identity to proceed to the simulation.</p>
+                <h2 class="text-4xl font-black text-white mb-3 font-heading tracking-tight">Login</h2>
+                <p class="text-gray-500 font-medium">Enter your credentials to access the system.</p>
             </div>
 
             <?php if (isset($error)): ?>
@@ -131,10 +131,10 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
                 <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                 
                 <div class="space-y-2">
-                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Primary Identity</label>
+                    <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Email</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                            <i class="fas fa-fingerprint text-gray-600 group-focus-within:text-primary-500 transition-colors text-lg"></i>
+                            <i class="fas fa-envelope text-gray-600 group-focus-within:text-primary-500 transition-colors text-lg"></i>
                         </div>
                         <input 
                             type="text" 
@@ -149,8 +149,8 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
 
                 <div class="space-y-2">
                     <div class="flex justify-between items-center ml-1">
-                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]" for="password">Access Key</label>
-                        <a href="forgot-password.php" class="text-[10px] font-black uppercase tracking-widest text-primary-500 hover:text-primary-400">Recovery?</a>
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]" for="password">Password</label>
+                        <a href="forgot-password.php" class="text-[10px] font-black uppercase tracking-widest text-primary-500 hover:text-primary-400">Forgot Password?</a>
                     </div>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
@@ -171,14 +171,14 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
                     type="submit" 
                     class="w-full bg-primary-600 text-white font-black py-6 rounded-2xl shadow-2xl shadow-primary-900/20 hover:bg-primary-500 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center space-x-4 text-xl tracking-tighter"
                 >
-                    <span>INITIALIZE ACCESS</span>
+                    <span>LOGIN</span>
                     <i class="fas fa-arrow-right text-sm opacity-50"></i>
                 </button>
             </form>
 
             <div class="mt-12 pt-10 border-t border-primary-500/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-gray-500 font-medium text-sm">New to the grid?</p>
-                <a href="register.php" class="bg-primary-500/5 hover:bg-primary-500/10 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] border border-primary-500/30 transition-all active:scale-95">Register Identity</a>
+                <p class="text-gray-500 font-medium text-sm">New to the system?</p>
+                <a href="register.php" class="bg-primary-500/5 hover:bg-primary-500/10 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] border border-primary-500/30 transition-all active:scale-95">Register</a>
             </div>
         </div>
     </div>

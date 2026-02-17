@@ -341,6 +341,11 @@ if (typeof EQueueNotifications === "undefined") {
     }
 
     playAlertSound() {
+      // Mute audio on staff pages as requested
+      if (window.location.pathname.includes("/staff/")) {
+        return;
+      }
+
       try {
         const audioCtx = new (
           window.AudioContext || window.webkitAudioContext

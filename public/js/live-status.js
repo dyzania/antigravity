@@ -13,6 +13,9 @@ class LiveQueueStatus {
   }
 
   async start(ticketMeta) {
+    // Mute on staff pages
+    if (window.location.pathname.includes("/staff/")) return false;
+
     if (this.isActive) {
       this.update(ticketMeta);
       return;

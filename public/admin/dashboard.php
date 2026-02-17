@@ -11,6 +11,7 @@ $serviceModel = new Service();
 $windowModel = new Window();
 $feedbackModel = new Feedback();
 
+$now = time();
 $stats = $ticketModel->getQueueStats();
 $feedbackStats = $feedbackModel->getFeedbackStats();
 $activeWindows = $windowModel->getActiveWindows();
@@ -75,7 +76,7 @@ function formatDuration($seconds) {
                         $containerClasses = $isServing 
                             ? 'bg-secondary-700 shadow-inner' 
                             : 'bg-secondary-200/70';
-                        $labelClasses = $isServing ? 'text-white/50' : 'text-secondary-400';
+                        $labelClasses = $isServing ? 'text-white/50' : 'text-secondary-900/40';
                         ?>
                         <div class="serving-container <?php echo $containerClasses; ?> rounded-2xl 3xl:rounded-[24px] 5xl:rounded-[40px] p-2 lg:p-3 3xl:p-6 5xl:p-10 mb-4 5xl:mb-8 border border-transparent transition-all duration-500">
                             <p class="serving-label text-[9px] 3xl:text-xs 5xl:text-lg font-black <?php echo $labelClasses; ?> uppercase tracking-[0.3em] mb-1 transition-colors">Now Serving</p>
@@ -88,7 +89,7 @@ function formatDuration($seconds) {
                                     </span>
                                 <?php else: ?>
                                     <span class="text-xl 3xl:text-3xl 5xl:text-5xl font-black text-secondary-900/40 font-heading transition-colors"><?php echo !$isActive ? 'Offline' : 'Idle'; ?></span>
-                                    <i class="fas <?php echo !$isActive ? 'fa-power-off' : 'fa-moon'; ?> text-secondary-300 text-lg 3xl:text-2xl 5xl:text-4xl transition-colors"></i>
+                                    <i class="fas <?php echo !$isActive ? 'fa-power-off' : 'fa-moon'; ?> <?php echo !$isActive ? 'text-secondary-300' : 'text-secondary-900/40'; ?> text-lg 3xl:text-2xl 5xl:text-4xl transition-colors"></i>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -130,7 +131,7 @@ function formatDuration($seconds) {
                     <?php else: 
                         foreach ($waitingTickets as $ticket): 
                             $globalPos = $ticketModel->getGlobalQueuePosition($ticket['id']);
-                            $estWaitSeconds = $ticketModel->getWeightedEstimatedWaitTime($ticket['id']);
+                            $estWaitSeconds = $ticketModel->getAdvancedEstimatedWaitTime($ticket['id'], $now);
                             $estWaitFormatted = formatDuration(round($estWaitSeconds));
                     ?>
                     <div class="bg-white rounded-[24px] 5xl:rounded-[48px] p-4 md:p-6 5xl:p-14 flex items-center justify-between hover:bg-slate-50 border border-slate-200 shadow-sm transition-all duration-300 group">
@@ -152,7 +153,11 @@ function formatDuration($seconds) {
                             </div>
                         </div>
                         <div class="flex flex-col items-end shrink-0 ml-4 group-hover:translate-x-1 transition-transform">
-                            <div class="text-[10px] md:text-sm 5xl:text-3xl font-black text-primary-700 bg-primary-50 px-3 py-1 5xl:px-8 5xl:py-3 rounded-full border border-primary-100 shadow-sm leading-none mb-1 md:mb-2 italic">
+                            <div class="text-[10px] md:text-sm 5xl:text-3xl font-black text-primary-700 bg-primary-50 px-3 py-1 5xl:px-8 5xl:py-3 rounded-full border border-primary-100 shadow-sm leading-none mb-1 md:mb-2 italic"
+                                 data-live-countdown="1"
+                                 data-ticket-id="<?php echo $ticket['id']; ?>"
+                                 data-target-timestamp="<?php echo (int)round(($now + $estWaitSeconds) * 1000); ?>"
+                                 data-server-now="<?php echo $now * 1000; ?>">
                                 <?php echo $estWaitFormatted; ?>
                             </div>
                             <p class="text-[8px] md:text-[10px] 5xl:text-xl font-black text-slate-300 uppercase tracking-widest leading-none">Sequence Pos</p>
@@ -183,10 +188,18 @@ function formatDuration($seconds) {
             </div>
             <div class="grid grid-cols-2 gap-4 5xl:gap-12 h-full">
                 <div class="bg-white rounded-2xl 5xl:rounded-[48px] p-6 5xl:p-16 shadow-xl shadow-slate-300/50 border border-slate-300 flex flex-col items-center justify-center h-full text-center">
-                    <div class="text-slate-300 mb-2 5xl:mb-8"><i class="fas fa-stopwatch text-2xl 3xl:text-4xl 5xl:text-7xl"></i></div>
+                    <?php 
+                        $globalAvg = $ticketModel->getGlobalAverageProcessTime();
+                        $isGlobalOverSLA = $globalAvg > 10; // Default SLA target 10 mins
+                    ?>
+                    <div class="<?php echo $isGlobalOverSLA ? 'text-rose-500' : 'text-slate-300'; ?> mb-2 5xl:mb-8">
+                        <i class="fas <?php echo $isGlobalOverSLA ? 'fa-triangle-exclamation' : 'fa-stopwatch'; ?> text-2xl 3xl:text-4xl 5xl:text-7xl"></i>
+                    </div>
                     <div>
                         <h3 class="text-[10px] 3xl:text-sm 5xl:text-3xl font-black uppercase tracking-widest text-slate-400 mb-1 5xl:mb-4">Avg Processing</h3>
-                        <p class="text-3xl 3xl:text-5xl 5xl:text-8xl font-black text-gray-900 leading-none"><?php echo $ticketModel->getGlobalAverageProcessTime(); ?> <span class="text-xs 3xl:text-sm 5xl:text-2xl text-slate-400 font-bold">min</span></p>
+                        <p class="text-3xl 3xl:text-5xl 5xl:text-8xl font-black <?php echo $isGlobalOverSLA ? 'text-rose-600 animate-pulse' : 'text-gray-900'; ?> leading-none">
+                            <?php echo $globalAvg; ?> <span class="text-xs 3xl:text-sm 5xl:text-2xl text-slate-400 font-bold">min</span>
+                        </p>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl 5xl:rounded-[48px] p-6 5xl:p-16 shadow-xl shadow-slate-300/50 border border-slate-300 flex flex-col items-center justify-center h-full text-center">
@@ -203,7 +216,7 @@ function formatDuration($seconds) {
 
 <script>
     // Constants for Water-like flow
-    const PIXELS_PER_SECOND = 250; // Constant speed
+    const PIXELS_PER_SECOND = 180; // Constant speed
     let carouselState = {
         scrollPos: 0,
         lastTimestamp: null,
@@ -263,7 +276,7 @@ function formatDuration($seconds) {
                     }
 
                     if (servingLabel) {
-                        servingLabel.className = `serving-label text-[9px] 3xl:text-xs 5xl:text-lg font-black uppercase tracking-[0.3em] mb-1 transition-colors ${isServing ? 'text-white/50' : 'text-secondary-400'}`;
+                        servingLabel.className = `serving-label text-[9px] 3xl:text-xs 5xl:text-lg font-black uppercase tracking-[0.3em] mb-1 transition-colors ${isServing ? 'text-white/50' : 'text-secondary-900/40'}`;
                     }
 
                     let html = '';
@@ -277,7 +290,7 @@ function formatDuration($seconds) {
                     } else {
                         html = `
                             <span class="text-xl 3xl:text-3xl 5xl:text-5xl font-black text-secondary-900/40 font-heading transition-colors">${!isActive ? 'Offline' : 'Idle'}</span>
-                            <i class="fas ${!isActive ? 'fa-power-off' : 'fa-moon'} text-secondary-300 text-lg 3xl:text-2xl 5xl:text-4xl transition-colors"></i>`;
+                            <i class="fas ${!isActive ? 'fa-power-off' : 'fa-moon'} ${!isActive ? 'text-secondary-300' : 'text-secondary-900/40'} text-lg 3xl:text-2xl 5xl:text-4xl transition-colors"></i>`;
                     }
                     if (display.innerHTML !== html) display.innerHTML = html;
                 }
@@ -422,5 +435,6 @@ function formatDuration($seconds) {
 
     document.addEventListener('DOMContentLoaded', initWindowCarousel);
 </script>
+<script src="<?php echo BASE_URL; ?>/js/live-countdown.js"></script>
 
 <?php include __DIR__ . '/../../includes/admin-layout-footer.php'; ?>
