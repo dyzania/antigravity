@@ -41,8 +41,8 @@ requireRole('admin');
     <aside id="admin-sidebar" class="fixed inset-y-0 left-0 w-72 glass-sidebar text-white z-50 flex flex-col transition-all duration-300 <?php echo $sidebarClass; ?>">
         <div class="p-8 border-b border-white/10">
             <a href="dashboard.php" class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center shadow-lg shadow-primary-900/20">
-                    <i class="fas fa-shield-alt text-white text-xl"></i>
+                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                    <img src="<?php echo BASE_URL; ?>/img/logo.png" alt="Logo" class="w-full h-full object-contain p-1.5">
                 </div>
                 <div>
                     <h1 class="text-xl font-black font-heading tracking-tighter leading-none"><?php echo APP_NAME; ?></h1>
@@ -93,7 +93,7 @@ requireRole('admin');
     <!-- Main Content Wrapper -->
     <div id="admin-main-content" class="flex-1 <?php echo $mainContentClass; ?> min-h-screen flex flex-col transition-all duration-300 overflow-x-hidden">
         <!-- Top Header -->
-        <header class="h-24 bg-gradient-to-r from-primary-900 via-primary-700 to-secondary-800 sticky top-0 z-40 border-b border-white/10 px-10 flex items-center justify-between shadow-2xl">
+        <header class="h-24 bg-gradient-to-r from-primary-900 via-primary-700 to-secondary-800 sticky top-0 z-40 border-b border-white/10 px-10 flex items-center justify-between shadow-premium">
             <div class="flex items-center flex-1 max-w-2xl">
                 <button onclick="toggleSidebar()" class="mr-6 text-white/70 hover:text-white transition-colors">
                     <i class="fas fa-bars text-xl"></i>

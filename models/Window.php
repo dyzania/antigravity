@@ -16,7 +16,13 @@ class Window {
                     WHERE window_id = w.id 
                     AND status IN ('called', 'serving') 
                     AND is_archived = 0
-                    ORDER BY called_at DESC LIMIT 1) as serving_ticket
+                    ORDER BY called_at DESC LIMIT 1) as serving_ticket,
+                   (SELECT status 
+                    FROM tickets 
+                    WHERE window_id = w.id 
+                    AND status IN ('called', 'serving') 
+                    AND is_archived = 0
+                    ORDER BY called_at DESC LIMIT 1) as serving_status
             FROM windows w
             LEFT JOIN users u ON w.staff_id = u.id
             ORDER BY w.window_number
@@ -34,7 +40,13 @@ class Window {
                     WHERE window_id = w.id 
                     AND status IN ('called', 'serving') 
                     AND is_archived = 0
-                    ORDER BY called_at DESC LIMIT 1) as serving_ticket
+                    ORDER BY called_at DESC LIMIT 1) as serving_ticket,
+                   (SELECT status 
+                    FROM tickets 
+                    WHERE window_id = w.id 
+                    AND status IN ('called', 'serving') 
+                    AND is_archived = 0
+                    ORDER BY called_at DESC LIMIT 1) as serving_status
             FROM windows w
             LEFT JOIN users u ON w.staff_id = u.id
             WHERE w.is_active = 1

@@ -130,88 +130,44 @@ if ($window) {
                 </div>
             </div>
 
-            <!-- Responsive 12-Column Grid Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-12 xl:grid-cols-[20%_25%_52%] gap-8">
-                
-                <!-- Column 1: Archived / On Hold (20%) -->
-                <div class="md:col-span-5 xl:col-auto space-y-6" id="archived-tickets-container">
-                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-xl 5xl:text-4xl font-black text-gray-900 font-heading">Archived</h3>
-                        <span class="px-3 5xl:px-6 py-1 5xl:py-3 bg-amber-100 text-amber-700 rounded-lg 5xl:rounded-2xl text-xs 5xl:text-2xl font-black uppercase tracking-wide"><?php echo count($archivedTickets); ?> On Hold</span>
-                    </div>
+            <!-- Balanced 50/50 Grid Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                    <div class="space-y-4 5xl:space-y-10">
-                        <?php if (empty($archivedTickets)): ?>
-                            <div class="bg-slate-50 rounded-2xl p-10 text-center border-2 border-dashed border-slate-200">
-                                <p class="text-sm 5xl:text-3xl font-bold text-gray-400">No archived tickets</p>
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($archivedTickets as $ticket): ?>
-                            <div class="bg-white p-5 5xl:p-12 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4 5xl:gap-10">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4 5xl:gap-10">
-                                        <div class="w-12 5xl:w-24 h-12 5xl:h-24 bg-amber-50 rounded-2xl 5xl:rounded-[32px] flex items-center justify-center font-black text-sm 5xl:text-3xl text-amber-600">
-                                            <?php echo $ticket['ticket_number']; ?>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 text-sm 5xl:text-3xl"><?php echo $ticket['user_name']; ?></p>
-                                            <div class="flex items-center gap-2 mt-1">
-                                                <i class="fas fa-clock text-[10px] 5xl:text-2xl text-amber-500"></i>
-                                                <span class="text-[10px] 5xl:text-2xl font-bold text-amber-600 elapsed-timer" data-seconds="<?php echo $ticket['elapsed_seconds']; ?>">0s</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-2">
-                                    <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 block">Internal Notes</label>
-                                    <textarea id="staff-notes-<?php echo $ticket['id']; ?>" 
-                                              class="w-full bg-slate-50 border-slate-100 rounded-xl p-3 text-[10px] font-medium focus:ring-primary-500 focus:border-primary-500 transition-all"
-                                              placeholder="Enter any internal notes about this transaction..." rows="2"><?php echo $ticket['staff_notes'] ?? 'Your document is ready to be received'; ?></textarea>
-                                </div>
-                                
-                                <button onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="w-full py-3 5xl:py-8 bg-slate-50 hover:bg-primary-50 text-primary-600 font-bold rounded-xl 5xl:rounded-[32px] transition-colors text-xs 5xl:text-2xl flex items-center justify-center gap-2 5xl:gap-6">
-                                    <i class="fas fa-check"></i> Complete Service
-                                </button>
-                            </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <!-- Column 2: Upcoming (Waitlist) (25%) -->
-                <div class="md:col-span-7 xl:col-auto space-y-6" id="waiting-tickets-container">
+                <!-- Updated Section (Waitlist) - 50% -->
+                <div class="space-y-6" id="waiting-tickets-container">
                      <div class="flex items-center justify-between mb-2">
                         <h3 class="text-xl 5xl:text-4xl font-black text-gray-900 font-heading">Upcoming</h3>
                         <span class="px-3 5xl:px-6 py-1 5xl:py-3 bg-slate-100 text-slate-500 rounded-lg 5xl:rounded-2xl text-xs 5xl:text-2xl font-black uppercase tracking-wide"><?php echo count($waitingTickets); ?> Waiting</span>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-white overflow-hidden min-h-[500px]">
+                    <div class="bg-white rounded-2xl shadow-premium border border-white overflow-hidden min-h-[500px]">
                         <?php if (empty($waitingTickets)): ?>
                             <div class="flex flex-col items-center justify-center h-full p-10 5xl:p-20 text-center opacity-50">
                                 <i class="fas fa-coffee text-4xl 5xl:text-8xl mb-4 5xl:mb-10 text-slate-300"></i>
                                 <p class="font-bold 5xl:text-4xl text-slate-400">Queue is empty</p>
                             </div>
                         <?php else: ?>
-                            <div class="divide-y divide-slate-50">
-                                <?php foreach (array_slice($waitingTickets, 0, 8) as $ticket): ?>
-                                <div class="p-6 5xl:p-14 flex items-center justify-between hover:bg-gradient-to-r hover:from-slate-50 hover:to-transparent transition-all duration-150 group">
-                                    <div class="flex items-center gap-5 5xl:gap-12 flex-1">
-                                        <div class="w-14 5xl:w-28 h-14 5xl:h-28 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl 5xl:rounded-[36px] flex items-center justify-center font-black text-sm 5xl:text-4xl text-slate-600 group-hover:from-slate-900 group-hover:to-slate-800 group-hover:text-white group-hover:shadow-xl group-hover:shadow-slate-300 transition-all duration-200 relative overflow-hidden">
-                                            <span class="relative z-10"><?php echo $ticket['ticket_number']; ?></span>
-                                            <div class="absolute inset-0 bg-white/10 group-hover:scale-150 transition-transform duration-400"></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 5xl:gap-8 p-6 5xl:p-14">
+                                <?php foreach (array_slice($waitingTickets, 0, 12) as $ticket): ?>
+                                <div class="bg-white rounded-[24px] 5xl:rounded-[48px] p-4 5xl:p-14 flex items-center justify-between hover:bg-slate-50 border border-slate-200 shadow-division transition-all duration-300 group">
+                                    <div class="flex items-center space-x-4 5xl:space-x-16 min-w-0 flex-1">
+                                        <div class="w-14 h-14 5xl:w-32 5xl:h-32 bg-slate-900 rounded-2xl 5xl:rounded-[40px] flex items-center justify-center shadow-lg border border-slate-100 group-hover:scale-105 transition-transform shrink-0">
+                                            <span class="text-white font-black text-xs 5xl:text-4xl"><?php echo $ticket['service_code']; ?></span>
                                         </div>
-                                        <div class="flex-1">
-                                            <p class="font-black text-gray-900 text-base 5xl:text-3xl mb-1 tracking-tight"><?php echo $ticket['service_name']; ?></p>
-                                            <p class="text-xs 5xl:text-2xl font-bold text-gray-500 uppercase tracking-wider"><?php echo $ticket['user_name']; ?></p>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center space-x-3 mb-1 5xl:mb-4">
+                                                <p class="font-black text-gray-900 text-lg 5xl:text-5xl leading-none tracking-tight"><?php echo $ticket['ticket_number']; ?></p>
+                                            </div>
+                                            <p class="text-[10px] 5xl:text-3xl font-bold text-slate-400 uppercase tracking-wider truncate"><?php echo $ticket['service_name']; ?></p>
+                                            <p class="text-[10px] 5xl:text-2xl font-black text-slate-500 uppercase tracking-widest mt-1 truncate"><?php echo $ticket['user_name']; ?></p>
                                         </div>
                                     </div>
-                                    <div class="w-3 5xl:w-6 h-3 5xl:h-6 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 shadow-lg shadow-primary-200 group-hover:scale-125 transition-transform duration-200"></div>
+                                    <div class="w-2 5xl:w-5 h-2 5xl:h-5 rounded-full bg-primary-500 shadow-lg shadow-primary-100 group-hover:scale-125 transition-transform duration-200"></div>
                                 </div>
                                 <?php endforeach; ?>
-                                <?php if(count($waitingTickets) > 8): ?>
-                                    <div class="p-4 5xl:p-10 text-center text-xs 5xl:text-2xl font-bold text-gray-400 bg-slate-50">
-                                        + <?php echo count($waitingTickets) - 8; ?> more
+                                <?php if(count($waitingTickets) > 12): ?>
+                                    <div class="md:col-span-2 p-4 5xl:p-10 text-center text-xs 5xl:text-2xl font-bold text-gray-400 bg-slate-50 rounded-xl">
+                                        + <?php echo count($waitingTickets) - 12; ?> more in queue
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -219,8 +175,8 @@ if ($window) {
                     </div>
                 </div>
 
-                <!-- Column 3: Active Transaction (55%) -->
-                <div class="md:col-span-12 xl:col-auto space-y-6" id="active-transaction-container">
+                <!-- Active Transactions Section - 50% -->
+                <div class="space-y-6" id="active-transaction-container">
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-xl 5xl:text-4xl font-black text-gray-900 font-heading">Active Transaction</h3>
                         <?php if (!empty($activeTickets)): ?>
@@ -230,71 +186,42 @@ if ($window) {
                         <?php endif; ?>
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <?php if (!empty($activeTickets)): ?>
                         <?php foreach ($activeTickets as $ticket): ?>
-                        <div class="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-primary-100 border border-white relative group">
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-primary-100 border border-white relative group flex flex-col">
                             <!-- Card Header -->
-                            <div class="bg-slate-900 p-8 5xl:p-20 text-white relative overflow-hidden">
+                            <div class="bg-slate-900 p-6 5xl:p-16 text-white relative overflow-hidden">
                                 <div class="relative z-10 text-center">
-                                    <p class="text-xs 5xl:text-2xl font-black uppercase tracking-[0.3em] opacity-50 mb-4 5xl:mb-10">Current Ticket</p>
-                                    <div class="text-6xl 5xl:text-9xl font-black font-heading mb-2 group-hover:scale-110 transition-transform duration-300"><?php echo $ticket['ticket_number']; ?></div>
-                                    <div class="inline-block px-4 py-1 5xl:px-10 5xl:py-4 bg-white/10 rounded-full text-xs 5xl:text-3xl font-bold border border-white/10 backdrop-blur-sm mt-4">
-                                        <?php echo strtoupper($ticket['status']); ?>
-                                    </div>
+                                    <p class="text-[10px] 5xl:text-xl font-black uppercase tracking-[0.3em] opacity-50 mb-2 5xl:mb-6">Current Ticket</p>
+                                    <div class="text-4xl 5xl:text-8xl font-black font-heading group-hover:scale-110 transition-transform duration-300"><?php echo $ticket['ticket_number']; ?></div>
                                 </div>
                                 <div class="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-transparent"></div>
-                                <div class="absolute -right-6 -bottom-6 text-9xl 5xl:text-[20rem] text-white opacity-5 rotate-12 select-none font-black"><?php echo $ticket['ticket_number']; ?></div>
                             </div>
 
                             <!-- Card Body -->
-                            <div class="p-8 5xl:p-20">
-                                <div class="text-center mb-8 5xl:mb-20">
-                                    <p class="text-xs 5xl:text-2xl font-bold text-gray-400 uppercase tracking-widest mb-2 5xl:mb-6">Customer Name</p>
-                                    <h4 class="text-2xl 5xl:text-6xl font-black text-gray-900 leading-tight mb-1"><?php echo $ticket['user_name']; ?></h4>
-                                    <p class="text-sm 5xl:text-3xl font-bold text-primary-600"><?php echo $ticket['service_name']; ?></p>
-                                    
-                                    <?php if (!empty($ticket['service_notes'])): ?>
-                                        <div class="mt-4 5xl:mt-10 bg-amber-50 border border-amber-200 rounded-xl p-4 5xl:p-10 text-left">
-                                            <p class="text-[10px] 5xl:text-xl font-black text-amber-500 uppercase tracking-wider mb-1 5xl:mb-4"><i class="fas fa-info-circle mr-1"></i> Special Instructions</p>
-                                            <p class="text-xs 5xl:text-2xl font-medium text-amber-800 leading-relaxed"><?php echo nl2br(htmlspecialchars($ticket['service_notes'])); ?></p>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <?php if (!empty($ticket['user_note'])): ?>
-                                        <div class="mt-4 5xl:mt-10 bg-slate-50 border border-slate-200 rounded-xl p-4 5xl:p-10 text-left">
-                                            <p class="text-[10px] 5xl:text-xl font-black text-slate-500 uppercase tracking-wider mb-1 5xl:mb-4"><i class="fas fa-comment-alt mr-1"></i> Customer Note</p>
-                                            <p class="text-xs 5xl:text-2xl font-medium text-slate-800 leading-relaxed"><?php echo nl2br(htmlspecialchars($ticket['user_note'])); ?></p>
-                                        </div>
-                                    <?php endif; ?>
+                            <div class="p-6 5xl:p-16 flex-1 flex flex-col">
+                                <div class="text-center mb-6 5xl:mb-12">
+                                    <h4 class="text-xl 5xl:text-4xl font-black text-gray-900 leading-tight mb-1"><?php echo $ticket['user_name']; ?></h4>
+                                    <p class="text-xs 5xl:text-2xl font-bold text-primary-600 uppercase tracking-widest"><?php echo $ticket['service_name']; ?></p>
                                 </div>
 
-                                <?php if ($ticket['status'] === 'serving'): ?>
-                                    <div class="mb-8">
-                                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Internal Transaction Notes</label>
-                                        <textarea id="staff-notes-<?php echo $ticket['id']; ?>" 
-                                                  class="w-full bg-slate-50 border-slate-100 rounded-2xl p-4 text-sm font-medium focus:ring-primary-500 focus:border-primary-500 transition-all"
-                                                  placeholder="Enter any internal notes about this transaction..." rows="3"><?php echo $ticket['staff_notes'] ?? 'Your document is ready to be received'; ?></textarea>
-                                    </div>
-                                <?php endif; ?>
-
-                                <div class="space-y-3 5xl:space-y-8">
+                                <div class="space-y-3 5xl:space-y-8 mt-auto">
                                     <?php if ($ticket['status'] === 'called'): ?>
-                                        <button type="button" onclick="startServing(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 bg-primary-600 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-primary-200 hover:bg-primary-700 hover:-translate-y-0.5 transition-all text-sm 5xl:text-4xl flex items-center justify-center gap-2 5xl:gap-6">
+                                        <button type="button" onclick="startServing(<?php echo $ticket['id']; ?>, this)" class="w-full py-3 5xl:py-8 bg-primary-600 text-white font-black rounded-xl 5xl:rounded-[32px] shadow-lg shadow-primary-200 hover:bg-primary-700 transition-all text-xs 5xl:text-2xl flex items-center justify-center gap-2">
                                             <i class="fas fa-play"></i> Start Serving
                                         </button>
-                                        <div class="flex gap-3 5xl:gap-8">
-                                            <button type="button" onclick="cancelTicket(<?php echo $ticket['id']; ?>, this)" class="relative z-10 flex-1 py-4 5xl:py-10 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl 5xl:rounded-[40px] hover:bg-slate-50 transition-all text-sm 5xl:text-3xl">
-                                                No Show
-                                            </button>
-                                        </div>
+                                        <button type="button" onclick="cancelTicket(<?php echo $ticket['id']; ?>, this)" class="w-full py-3 5xl:py-8 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl 5xl:rounded-[32px] hover:bg-slate-50 transition-all text-xs 5xl:text-2xl">
+                                            No Show
+                                        </button>
                                     <?php else: ?>
-                                        <button type="button" onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 bg-primary-500 text-white font-black rounded-2xl 5xl:rounded-[40px] shadow-lg shadow-primary-200 hover:bg-primary-600 hover:-translate-y-0.5 transition-all text-sm 5xl:text-4xl flex items-center justify-center gap-2 5xl:gap-6">
+                                        <button type="button" onclick="completeTicket(<?php echo $ticket['id']; ?>, this)" class="w-full py-3 5xl:py-8 bg-primary-500 text-white font-black rounded-xl 5xl:rounded-[32px] shadow-lg shadow-primary-200 hover:bg-primary-600 transition-all text-xs 5xl:text-2xl flex items-center justify-center gap-2">
                                             <i class="fas fa-check"></i> Complete
                                         </button>
                                     <?php endif; ?>
                                     
-                                    <button type="button" onclick="archiveTicket(<?php echo $ticket['id']; ?>, this)" class="relative z-10 w-full py-3 5xl:py-8 bg-amber-50 text-amber-600 font-bold rounded-xl hover:bg-amber-100 transition-all text-xs 5xl:text-2xl flex items-center justify-center gap-2 5xl:gap-6">
-                                        <i class="fas fa-box-archive"></i> Move to Archive
+                                    <button type="button" onclick="archiveTicket(<?php echo $ticket['id']; ?>, this)" class="w-full py-2 5xl:py-6 bg-amber-50 text-amber-600 font-bold rounded-xl hover:bg-amber-100 transition-all text-[10px] 5xl:text-xl flex items-center justify-center gap-2">
+                                        <i class="fas fa-box-archive"></i> Archive
                                     </button>
                                 </div>
                             </div>
@@ -302,18 +229,19 @@ if ($window) {
                         <?php endforeach; ?>
 
                         <!-- Call Next Mini-Button -->
-                        <?php if ($window['is_active']): ?>
-                            <button type="button" onclick="callNext(<?php echo $window['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 border-2 border-dashed border-primary-200 text-primary-500 font-bold rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all flex items-center justify-center gap-2 5xl:gap-6 text-sm 5xl:text-3xl">
-                                <i class="fas fa-plus"></i> Call Another
-                            </button>
-                        <?php else: ?>
-                            <button disabled class="w-full py-4 5xl:py-10 border-2 border-dashed border-slate-200 text-slate-400 font-bold rounded-2xl cursor-not-allowed flex items-center justify-center gap-2 5xl:gap-6 text-sm 5xl:text-3xl">
-                                <i class="fas fa-ban"></i> Go Online to Call Only
-                            </button>
-                        <?php endif; ?>
-
+                        <div class="md:col-span-2 mt-2">
+                            <?php if ($window['is_active']): ?>
+                                <button type="button" onclick="callNext(<?php echo $window['id']; ?>, this)" class="relative z-10 w-full py-4 5xl:py-10 border-2 border-dashed border-primary-200 text-primary-500 font-bold rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all flex items-center justify-center gap-2 5xl:gap-6 text-sm 5xl:text-3xl">
+                                    <i class="fas fa-plus"></i> Call Another
+                                </button>
+                            <?php else: ?>
+                                <button disabled class="w-full py-4 5xl:py-10 border-2 border-dashed border-slate-200 text-slate-400 font-bold rounded-2xl cursor-not-allowed flex items-center justify-center gap-2 5xl:gap-6 text-sm 5xl:text-3xl">
+                                    <i class="fas fa-ban"></i> Go Online to Call
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     <?php else: ?>
-                        <div class="bg-white rounded-2xl p-8 5xl:p-32 text-center shadow-xl shadow-slate-200/50 border border-slate-100 py-20 5xl:py-40">
+                        <div class="bg-white rounded-2xl p-8 5xl:p-32 text-center shadow-xl shadow-slate-200/50 border border-slate-100 py-20 5xl:py-40 col-span-full">
                             <div class="w-20 5xl:w-48 h-20 5xl:h-48 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6 5xl:mb-16 animate-pulse">
                                 <i class="fas fa-bell text-primary-500 text-2xl 5xl:text-7xl"></i>
                             </div>
@@ -329,6 +257,7 @@ if ($window) {
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
+                    </div>
                 </div>
 
             </div>

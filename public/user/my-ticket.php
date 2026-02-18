@@ -144,7 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                 <h3 class="text-base md:text-3xl font-black font-heading mb-4 md:mb-8 leading-tight opacity-50 text-center md:text-left"><?php echo $ticket['service_name']; ?></h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-4 md:gap-8">
                                     <div class="px-6 md:px-12 py-4 md:py-10 bg-white/5 rounded-[22px] md:rounded-[32px] border border-white/10 flex items-center space-x-5 md:space-x-8 backdrop-blur-xl group/box">
-                                        <i class="fas <?php echo ($isCompleted) ? 'fa-history' : 'fa-user-friends'; ?> text-white text-xl md:text-5xl shrink-0 group-hover/box:scale-110 transition-transform"></i>
+                                        <div class="w-12 h-12 md:w-24 md:h-24 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 border border-white/10 group-hover/box:scale-110 transition-transform">
+                                            <span class="text-white font-black text-xs md:text-3xl"><?php echo $ticket['service_code']; ?></span>
+                                        </div>
                                         <div class="flex flex-col">
                                             <span class="text-[8px] md:text-sm font-black uppercase tracking-widest text-white opacity-60 mb-1 md:mb-2">
                                                 <?php 

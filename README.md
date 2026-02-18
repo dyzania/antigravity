@@ -5,6 +5,7 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 ## 🌟 Features
 
 ### 👥 User Portal
+
 - **Live Queue Display** - Real-time view of active service windows and waiting queue
 - **Smart Ticket Generation** - Get tickets for specific services with requirement information
 - **My Ticket Tracking** - Monitor your position in queue with live updates
@@ -12,6 +13,7 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 - **Queue Position Highlights** - Your ticket is highlighted in the queue display
 
 ### 🖥️ Staff/Window Portal
+
 - **Service Management** - Toggle services on/off dynamically
 - **Smart Queue Filtering** - Only shows tickets for enabled services
 - **Call Next Ticket** - Automated queue management
@@ -19,11 +21,12 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 - **Transaction Status Updates** - Mark tickets as called, serving, or completed
 
 ### 🎯 Admin Dashboard
+
 - **Live Queue Monitoring** - Real-time overview of all active queues
 - **Window & Staff Management** - Create and assign staff to service windows
 - **Comprehensive Analytics** - Queue statistics, service performance, wait times
 - **Sentiment Analysis Review** - AI-powered feedback analysis dashboard
-- **Chatbot Data Management** - Train and manage chatbot responses
+- **AI Context Management** - Manage the AI knowledge base context
 - **User Management** - Full CRUD operations for users and staff
 
 ## 📋 System Requirements
@@ -46,6 +49,7 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 ## 📚 Documentation
 
 ### User Workflow
+
 1. Register/Login to user account
 2. View queue display to see active windows
 3. Get ticket by selecting desired service
@@ -55,6 +59,7 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 7. Provide mandatory feedback
 
 ### Staff Workflow
+
 1. Login to staff account
 2. Toggle services on/off as needed
 3. View eligible waiting queue
@@ -64,17 +69,19 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 7. System notifies customer
 
 ### Admin Workflow
+
 1. Login to admin account
 2. Create staff accounts and assign to windows
 3. Monitor live queue across all windows
 4. Review analytics and performance metrics
 5. Analyze customer feedback sentiment
-6. Manage chatbot training data
+6. Manage AI context training data
 7. Generate reports
 
 ## 🔧 Technical Architecture
 
 ### Database Structure
+
 - **users** - User accounts (user/staff/admin roles)
 - **windows** - Service windows/counters
 - **services** - Available services
@@ -82,30 +89,34 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 - **tickets** - Queue tickets with full lifecycle tracking
 - **feedback** - Customer feedback with sentiment scores
 - **notifications** - System notifications
-- **chatbot_data** - Chatbot training data
+- **ai_context** - AI knowledge base context
 - **activity_logs** - System activity logging
 
 ### Key Features Implementation
 
 #### Sentiment Analysis
+
 - Keyword-based analysis with positive/negative word detection
 - Rating integration for accuracy
 - Sentiment scoring (-1 to 1 scale)
 - Categories: very_positive, positive, neutral, negative, very_negative
 
 #### Mandatory Feedback System
+
 - Blocks new ticket creation if previous feedback pending
 - Star rating (1-5) with optional text comment
 - Real-time sentiment analysis
 - Analytics dashboard integration
 
 #### Real-time Queue Updates
+
 - JavaScript polling (5-second intervals)
 - AJAX-based queue refresh
 - User ticket highlighting
 - Queue position calculation
 
 #### Notification System
+
 - Email notifications via SMTP
 - Web push notification support
 - Triggered on: ticket called, serving, completed
@@ -138,14 +149,14 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 - Peak hours identification
 - Customer satisfaction scores
 
-## 🤖 Chatbot Integration
+## 🤖 AI Context Integration
 
-The system includes a chatbot data management interface where admins can:
-- Create FAQ entries
-- Categorize responses
-- Add keywords for better matching
-- Track usage statistics
-- Export data for external chatbot systems
+The system includes an AI context management interface where admins can:
+
+- Manage the organizational knowledge base
+- Import documents (PDF, DOCX) for context extraction
+- Update real-time AI responses based on defined context
+- Test AI responses using the integrated widget
 
 ## 🔄 Future Enhancements
 
@@ -199,18 +210,23 @@ This project is open-source and available under the MIT License.
 ## 👨‍💻 Developer Notes
 
 ### Adding New Services
+
 1. Insert into `services` table via admin panel
 2. Services automatically available for ticket generation
 3. Assign services to windows in window management
 
 ### Customizing Sentiment Analysis
+
 Edit the `analyzeSentiment()` method in `models/Feedback.php`:
+
 - Modify positive/negative keyword lists
 - Adjust scoring algorithm
 - Add custom sentiment categories
 
 ### Extending Notifications
+
 The notification system is modular. To add new notification types:
+
 1. Add type to `notifications` table enum
 2. Create notification trigger in relevant model
 3. Add notification handler in frontend
@@ -224,6 +240,7 @@ The notification system is modular. To add new notification types:
 ## 📞 Support
 
 For technical support or questions:
+
 - Check INSTALLATION.md for setup help
 - Review inline code comments
 - Open an issue on the repository

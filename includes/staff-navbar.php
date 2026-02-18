@@ -1,10 +1,10 @@
 <nav class="sticky top-0 z-[100] w-full">
     <div class="w-full">
-        <div class="glass-morphism shadow-xl px-4 md:px-12 py-4 md:py-6 border-b border-white/50 flex items-center justify-between">
+        <div class="glass-morphism shadow-premium px-4 md:px-12 py-4 md:py-6 border-b border-white/50 flex items-center justify-between">
             <!-- Logo -->
             <a href="dashboard.php" class="flex items-center space-x-3 group shrink-0">
-                <div class="w-10 h-10 bg-secondary-600 rounded-xl flex items-center justify-center shadow-lg group-hover:bg-secondary-700 transition-all duration-300 transform group-hover:rotate-6">
-                    <i class="fas fa-user-tie text-white text-xl"></i>
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-6 transition-all duration-300 p-1.5">
+                    <img src="<?php echo BASE_URL; ?>/img/logo.png" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <div class="hidden sm:block">
                     <span class="text-xl font-black tracking-tighter font-heading text-gray-900 leading-none"><?php echo APP_NAME; ?></span>
@@ -19,6 +19,30 @@
                 </a>
                 <a href="services.php" class="px-6 py-3 rounded-xl text-lg font-black tracking-tight <?php echo str_contains($_SERVER['PHP_SELF'], 'services.php') ? 'bg-secondary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-secondary-50 hover:text-secondary-600' ?> transition-all duration-300 whitespace-nowrap">
                     <i class="fas fa-clipboard-list mr-2 opacity-70"></i>Service Control
+                </a>
+                <?php
+                // Get archived count for the active window
+                $archivedCount = 0;
+                if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'staff') {
+                    if (!isset($ticketModel)) {
+                        require_once __DIR__ . '/../models/Ticket.php';
+                        $ticketModel = new Ticket();
+                    }
+                    if (!isset($windowModel)) {
+                        require_once __DIR__ . '/../models/Window.php';
+                        $windowModel = new Window();
+                    }
+                    $activeWindow = $windowModel->getWindowByStaff($_SESSION['user_id']);
+                    if ($activeWindow) {
+                        $archivedCount = count($ticketModel->getArchivedTicketsByWindow($activeWindow['id']));
+                    }
+                }
+                ?>
+                <a href="archived.php" class="px-6 py-3 rounded-xl text-lg font-black tracking-tight <?php echo str_contains($_SERVER['PHP_SELF'], 'archived.php') ? 'bg-secondary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-secondary-50 hover:text-secondary-600' ?> transition-all duration-300 whitespace-nowrap">
+                    <i class="fas fa-archive mr-2 opacity-70"></i>Archives
+                    <?php if ($archivedCount > 0): ?>
+                        <span class="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full ring-2 ring-white animate-pulse"><?php echo $archivedCount; ?></span>
+                    <?php endif; ?>
                 </a>
                 
                 <div class="h-6 w-px bg-gray-200 mx-2"></div>
@@ -67,6 +91,14 @@
                 <ul class="flex flex-col font-black space-y-2 p-2 bg-gray-50/50 rounded-[2rem] border border-gray-100">
                     <li><a href="dashboard.php" class="flex items-center py-4 px-6 rounded-2xl <?php echo str_contains($_SERVER['PHP_SELF'], 'dashboard.php') ? 'bg-secondary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-white' ?>"><i class="fas fa-desktop mr-4 text-lg"></i>Live Counter</a></li>
                     <li><a href="services.php" class="flex items-center py-4 px-6 rounded-2xl <?php echo str_contains($_SERVER['PHP_SELF'], 'services.php') ? 'bg-secondary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-white' ?>"><i class="fas fa-clipboard-list mr-4 text-lg"></i>Service Control</a></li>
+                    <li><a href="archived.php" class="flex items-center justify-between py-4 px-6 rounded-2xl <?php echo str_contains($_SERVER['PHP_SELF'], 'archived.php') ? 'bg-secondary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-white' ?>">
+                        <div class="flex items-center">
+                            <i class="fas fa-archive mr-4 text-lg"></i>Archived Tickets
+                        </div>
+                        <?php if (isset($archivedCount) && $archivedCount > 0): ?>
+                            <span class="px-2 py-0.5 bg-red-500 text-white text-[10px] rounded-full"><?php echo $archivedCount; ?></span>
+                        <?php endif; ?>
+                    </a></li>
                 </ul>
             </div>
         </div>

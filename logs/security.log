@@ -13,3 +13,10 @@
 [2026-02-15 15:53:21] [IP:::1] [USER:28] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: d9eb08f59096e59a601a8834c8b3bf59f74f94252b51c7678489ed2596c12c73, Got: 
 [2026-02-15 15:53:22] [IP:::1] [USER:28] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: d9eb08f59096e59a601a8834c8b3bf59f74f94252b51c7678489ed2596c12c73, Got: 
 [2026-02-15 16:42:31] [IP:::1] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: d9eb08f59096e59a601a8834c8b3bf59f74f94252b51c7678489ed2596c12c73, Got: 
+[2026-02-18 11:08:29] [IP:::1] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: a6af70e1c4bb424bc44cbc4bd8c222cb5f8ee4bd6184001e8e65f960caa8ca9d, Got: 
+[2026-02-18 11:08:30] [IP:::1] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: a6af70e1c4bb424bc44cbc4bd8c222cb5f8ee4bd6184001e8e65f960caa8ca9d, Got: 
+[2026-02-18 11:08:31] [IP:::1] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: a6af70e1c4bb424bc44cbc4bd8c222cb5f8ee4bd6184001e8e65f960caa8ca9d, Got: 
+[2026-02-18 11:19:53] [IP:192.168.1.31] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: 51f20140674d5ac28a412b1b3cc8f94196df12a7177aadcb91094fa637e3558f, Got: 
+[2026-02-18 11:20:02] [IP:192.168.1.31] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: 51f20140674d5ac28a412b1b3cc8f94196df12a7177aadcb91094fa637e3558f, Got: 
+[2026-02-18 11:20:03] [IP:192.168.1.31] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: 51f20140674d5ac28a412b1b3cc8f94196df12a7177aadcb91094fa637e3558f, Got: 
+[2026-02-18 11:20:04] [IP:192.168.1.31] [USER:18] [EVENT:CSRF_FAILURE] Invalid token provided. Expected: 51f20140674d5ac28a412b1b3cc8f94196df12a7177aadcb91094fa637e3558f, Got: 

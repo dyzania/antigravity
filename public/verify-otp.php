@@ -51,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="max-w-md w-full glass-morphism p-8 md:p-10 rounded-[30px] shadow-2xl border border-white/20 text-center relative overflow-hidden">
         
         <div class="mb-8">
-            <div class="w-20 h-20 bg-primary-100 text-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform rotate-3">
-                <i class="fas fa-shield-alt text-4xl"></i>
+            <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform rotate-3 p-3">
+                <img src="<?php echo BASE_URL; ?>/img/logo.png" alt="Logo" class="w-full h-full object-contain">
             </div>
             <h1 class="text-3xl font-black mb-2 font-heading">Verification Code</h1>
             <p class="text-gray-600 font-medium">

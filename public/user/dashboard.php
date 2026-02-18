@@ -131,7 +131,7 @@ function formatDuration($seconds) {
                                 <?php echo $statusText; ?>
                             </p>
                         </div>
-                        <a href="<?php echo $actionUrl; ?>" class="<?php echo $btnClass; ?> px-4 md:px-6 py-2.5 md:py-4 rounded-xl md:rounded-2xl transition-all duration-300 shadow-sm font-black text-[10px] md:text-base 3xl:text-xl 5xl:text-3xl uppercase whitespace-nowrap flex items-center">
+                        <a href="<?php echo $actionUrl; ?>" class="<?php echo $btnClass; ?> px-4 md:px-6 py-2.5 md:py-4 rounded-xl md:rounded-2xl transition-all duration-300 shadow-division font-black text-[10px] md:text-base 3xl:text-xl 5xl:text-3xl uppercase whitespace-nowrap flex items-center">
                             <?php echo $actionLabel; ?> <i class="fas <?php echo $actionIcon; ?> ml-2 text-[8px] md:text-sm 3xl:text-lg 5xl:text-2xl"></i>
                         </a>
                     </div>
@@ -172,10 +172,9 @@ function formatDuration($seconds) {
                         <?php endforeach; ?>
                     </div>
 
-                    <div id="window-carousel-viewport" class="relative overflow-hidden w-full cursor-grab active:cursor-grabbing py-4 -mx-4 px-4 md:mx-0 md:px-0">
-                        <div id="window-carousel-track" class="flex gap-4 5xl:gap-12 w-full will-change-transform">
-                            <?php foreach ($activeWindows as $window): ?>
-                                <div class="window-slide flex-none w-full sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] xl:w-[calc(25%-12px)]" data-window-id="<?php echo $window['id']; ?>">
+                    <div id="window-container" class="flex flex-nowrap gap-4 5xl:gap-12 w-full overflow-x-auto scrollbar-hide py-4 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth cursor-grab active:cursor-grabbing">
+                        <?php foreach ($activeWindows as $window): ?>
+                            <div class="window-item flex-none w-[280px] md:w-[320px] lg:w-[calc(25%-12px)] 5xl:w-[calc(25%-36px)]" data-window-id="<?php echo $window['id']; ?>">
                                     <div class="window-card bg-white rounded-[32px] 5xl:rounded-[60px] p-6 3xl:p-10 5xl:p-16 shadow-division border border-gray-50 hover:shadow-premium transition-all duration-300 group h-full">
                                         <div class="flex items-start justify-between mb-8 5xl:mb-16">
                                             <div class="flex items-center space-x-4 3xl:space-x-6 5xl:space-x-10">
@@ -224,8 +223,7 @@ function formatDuration($seconds) {
                                         </div>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
 
                 <?php endif; ?>
@@ -337,31 +335,21 @@ function formatDuration($seconds) {
     </style>
 
     <script>
-        // Unified Carousel Logic for User Dashboard
-    const PIXELS_PER_SECOND = 120;
-    let carouselState = {
-        scrollPos: 0,
-        lastTimestamp: null,
-        animationId: null,
-        isPaused: false,
-        totalWidth: 0
-    };
-
-    function syncCarouselData() {
+    function syncWindowsData() {
         const syncSource = document.getElementById('window-sync-source');
         if (!syncSource) return;
 
         const syncItems = syncSource.querySelectorAll('.sync-item');
-        const track = document.getElementById('window-carousel-track');
-        if (!track) return;
+        const container = document.getElementById('window-container');
+        if (!container) return;
 
         syncItems.forEach(item => {
             const id = item.dataset.id;
             const ticket = item.dataset.ticket;
             
-            const slides = track.querySelectorAll(`.window-slide[data-window-id="${id}"]`);
+            const windowItems = container.querySelectorAll(`.window-item[data-window-id="${id}"]`);
             
-            slides.forEach(slide => {
+            windowItems.forEach(slide => {
                 const display = slide.querySelector('.serving-ticket-display');
                 const servingContainer = slide.querySelector('.serving-container');
                 const servingLabel = slide.querySelector('.serving-label');
@@ -407,146 +395,53 @@ function formatDuration($seconds) {
         });
     }
 
-    function calculateMetrics() {
-        const track = document.getElementById('window-carousel-track');
-        if (!track) return;
-        const style = window.getComputedStyle(track);
-        const gap = parseFloat(style.gap) || 0;
-        carouselState.totalWidth = (track.scrollWidth + gap) / 3;
-    }
-
-    function initWindowCarousel() {
-        const track = document.getElementById('window-carousel-track');
-        const viewport = document.getElementById('window-carousel-viewport');
-        if (!track || !viewport) return;
-
-        const originalSlides = Array.from(track.querySelectorAll('.window-slide'));
-        const slideCount = originalSlides.length;
-        if (slideCount === 0) return;
-        
-        // If 4 or fewer active windows, keep static and centered (desktop view)
-        // Note: For mobile, it might still need scrolling if widths exceed screen, but with 4 items on desktop it fits.
-        // We'll trust the responsive CSS grid/flex to handle the layout if static.
-        if (slideCount <= 4) {
-            track.classList.remove('w-max'); // Remove w-max to allow flex-wrap or normal flow if needed, but here we want centering
-            track.classList.add('w-full', 'justify-center');
-            carouselState.isPaused = true;
-            // Ensure no drag cues
-            viewport.classList.remove('cursor-grab', 'active:cursor-grabbing');
-            return;
-        }
-
-        // Add visual cues for interactivity
-        viewport.classList.add('cursor-grab', 'active:cursor-grabbing');
-        
-        const contentHtml = originalSlides.map(s => s.outerHTML).join('');
-        track.innerHTML = contentHtml + contentHtml + contentHtml;
-        
-        // Drag scrolling variables
-        let isDragging = false;
-        let startX = 0;
-        let lastX = 0;
-
-        function handleDragStart(e) {
-            isDragging = true;
-            carouselState.isPaused = true;
-            startX = (e.pageX || e.touches[0].pageX);
-            lastX = startX;
-            viewport.classList.add('cursor-grabbing');
-            viewport.classList.remove('cursor-grab');
-        }
-
-        function handleDragEnd() {
-            if (!isDragging) return;
-            isDragging = false;
-            carouselState.isPaused = false;
-            viewport.classList.remove('cursor-grabbing');
-            viewport.classList.add('cursor-grab');
-            carouselState.lastTimestamp = null; // Re-sync animation timing
-        }
-
-        function handleDragMove(e) {
-            if (!isDragging) return;
-            const currentX = (e.pageX || e.touches?.[0]?.pageX);
-            if (currentX === undefined) return;
-            
-            const diff = lastX - currentX;
-            lastX = currentX;
-
-            carouselState.scrollPos += diff;
-            
-            // Infinite loop handling
-            while (carouselState.scrollPos >= carouselState.totalWidth) {
-                carouselState.scrollPos -= carouselState.totalWidth;
-            }
-            while (carouselState.scrollPos < 0) {
-                carouselState.scrollPos += carouselState.totalWidth;
-            }
-            
-            track.style.transform = `translate3d(-${carouselState.scrollPos}px, 0, 0)`;
-        }
-
-        viewport.addEventListener('mousedown', handleDragStart);
-        window.addEventListener('mouseup', handleDragEnd);
-        window.addEventListener('mousemove', handleDragMove);
-
-        viewport.addEventListener('touchstart', handleDragStart, { passive: true });
-        window.addEventListener('touchend', handleDragEnd);
-        window.addEventListener('touchmove', handleDragMove, { passive: false });
-
-        viewport.addEventListener('mouseenter', () => { if (!isDragging) carouselState.isPaused = true; });
-        viewport.addEventListener('mouseleave', () => { if (!isDragging) carouselState.isPaused = false; });
-        
-        requestAnimationFrame(() => {
-            calculateMetrics();
-            startAnimation();
-        });
-
-        window.addEventListener('resize', calculateMetrics);
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) carouselState.lastTimestamp = null;
-        });
-
-        syncCarouselData();
-    }
-
-    function startAnimation() {
-        if (carouselState.animationId) cancelAnimationFrame(carouselState.animationId);
-        const track = document.getElementById('window-carousel-track');
-        
-        function animate(timestamp) {
-            if (!carouselState.lastTimestamp) {
-                carouselState.lastTimestamp = timestamp;
-                carouselState.animationId = requestAnimationFrame(animate);
-                return;
-            }
-
-            const delta = (timestamp - carouselState.lastTimestamp) / 1000;
-            carouselState.lastTimestamp = timestamp;
-            const cappedDelta = Math.min(delta, 0.1); 
-
-            if (!carouselState.isPaused && carouselState.totalWidth > 0) {
-                carouselState.scrollPos += PIXELS_PER_SECOND * cappedDelta;
-                while (carouselState.scrollPos >= carouselState.totalWidth) {
-                    carouselState.scrollPos -= carouselState.totalWidth;
-                }
-                track.style.transform = `translate3d(-${carouselState.scrollPos}px, 0, 0)`;
-            }
-            carouselState.animationId = requestAnimationFrame(animate);
-        }
-        carouselState.animationId = requestAnimationFrame(animate);
-    }
-
     // Initialize Real-Time Auto-Refresh for specific stable segments
     new DashboardRefresh(['header-sync', 'notification-sync', 'window-count-sync', 'waitlist-sync', 'window-sync-source'], 3000);
 
     document.addEventListener('dashboard:updated', (e) => {
         if (e.detail.id === 'window-sync-source') {
-            syncCarouselData();
+            syncWindowsData();
         }
     });
 
-    document.addEventListener('DOMContentLoaded', initWindowCarousel);
+    function initDragScroll() {
+        const container = document.getElementById('window-container');
+        if (!container) return;
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        container.addEventListener('mousedown', (e) => {
+            isDown = true;
+            container.classList.add('active');
+            startX = e.pageX - container.offsetLeft;
+            scrollLeft = container.scrollLeft;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            isDown = false;
+            container.classList.remove('active');
+        });
+
+        container.addEventListener('mouseup', () => {
+            isDown = false;
+            container.classList.remove('active');
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - container.offsetLeft;
+            const walk = (x - startX) * 2; // scroll-fast
+            container.scrollLeft = scrollLeft - walk;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        syncWindowsData();
+        initDragScroll();
+    });
     </script>
     <script src="<?php echo BASE_URL; ?>/js/live-countdown.js"></script>
     

@@ -19,7 +19,7 @@ $avgWaitTime = round($stmt->fetch()['avg_wait'] ?? 0);
 
 // 3. Average Service Time
 $stmt = $db->query("
-    SELECT AVG(TIMESTAMPDIFF(MINUTE, served_at, completed_at)) as avg_service
+    SELECT AVG(service_time_accumulated) / 60 as avg_service
     FROM tickets 
     WHERE status = 'completed' AND DATE(created_at) = CURDATE()
 ");
@@ -56,16 +56,6 @@ if (($statusStats['completed'] + $statusStats['cancelled']) > 0) {
     $completionRate = round(($statusStats['completed'] / ($statusStats['completed'] + $statusStats['cancelled'])) * 100);
 }
 
-// 7. Customer Satisfaction
-$avgRating = 0;
-try {
-    $stmt = $db->query("
-        SELECT AVG(rating) as avg_rating
-        FROM feedback 
-        WHERE DATE(created_at) = CURDATE() AND rating IS NOT NULL
-    ");
-    $avgRating = round($stmt->fetch()['avg_rating'] ?? 0, 1);
-} catch (Exception $e) {}
 
 // 8. Wait Time & SLA Metrics
 $stmt = $db->query("
@@ -98,7 +88,7 @@ $currentQueueSize = $statusStats['waiting'];
 // 10. Service Performance
 $stmt = $db->query("
     SELECT s.service_name, s.service_code, COUNT(t.id) as count,
-           AVG(CASE WHEN t.status='completed' THEN TIMESTAMPDIFF(MINUTE, t.served_at, t.completed_at) ELSE NULL END) as avg_svc_time
+           AVG(CASE WHEN t.status='completed' THEN t.service_time_accumulated / 60 ELSE NULL END) as avg_svc_time
     FROM tickets t
     JOIN services s ON t.service_id = s.id
     WHERE DATE(t.created_at) = CURDATE()
@@ -111,15 +101,6 @@ $chartData = [
     'peakHours' => [
         'labels' => array_keys($peakHours),
         'data' => array_values($peakHours)
-    ],
-    'status' => [
-        'labels' => ['Completed', 'Serving', 'Waiting', 'Cancelled'],
-        'data' => [
-            $statusStats['completed'],
-            $statusStats['serving'],
-            $statusStats['waiting'],
-            $statusStats['cancelled']
-        ]
     ],
     'servicePerformance' => [
         'labels' => array_column($serviceStats, 'service_code'),
@@ -174,32 +155,6 @@ $chartData = [
         <?php endforeach; ?>
     </div>
 
-    <!-- Satisfaction Highlight -->
-    <div class="max-w-xl mx-auto">
-        <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-[1px] rounded-3xl shadow-lg shadow-orange-200/50 transform transition-all hover:scale-[1.02]">
-            <div class="bg-white/95 rounded-[23px] px-8 py-6 flex items-center justify-between">
-                <div class="flex items-center space-x-6">
-                    <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 text-3xl shadow-inner">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600 mb-1">Customer Satisfaction</p>
-                        <p class="text-4xl font-black text-slate-900 tracking-tight">
-                            <?php echo $avgRating; ?><span class="text-xl text-slate-300 ml-1">/ 5.0</span>
-                        </p>
-                    </div>
-                </div>
-                <div class="hidden sm:block text-right">
-                    <div class="flex space-x-1 mb-2">
-                        <?php for($i=1;$i<=5;$i++): ?>
-                            <i class="fas fa-star <?php echo $i <= round($avgRating) ? 'text-amber-400' : 'text-slate-100'; ?> text-xs"></i>
-                        <?php endfor; ?>
-                    </div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Real-time Rating</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Interactive Visualizations Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -226,17 +181,6 @@ $chartData = [
             </div>
         </div>
 
-        <!-- Status Distribution Chart (Expanded) -->
-        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/30 border border-slate-100 p-8 lg:col-span-2">
-            <div class="flex items-center justify-between w-full mb-8">
-                <h2 class="text-xl font-black text-slate-900 font-heading text-center w-full">Queue Status Composition</h2>
-            </div>
-            <div class="h-[350px] flex items-center justify-center relative">
-                <div class="w-full max-w-xl">
-                    <canvas id="statusChart"></canvas>
-                </div>
-            </div>
-        </div>
 
     </div>
 </div>
@@ -293,37 +237,6 @@ new Chart(peakCtx, {
     }
 });
 
-// 2. Status Distribution Chart
-new Chart(document.getElementById('statusChart'), {
-    type: 'doughnut',
-    data: {
-        labels: chartData.status.labels,
-        datasets: [{
-            data: chartData.status.data,
-            backgroundColor: ['#10b981', '#6366f1', '#f1f5f9', '#ef4444'],
-            borderWidth: 8,
-            borderColor: '#ffffff',
-            hoverOffset: 20
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '80%',
-        plugins: {
-            legend: {
-                position: 'right',
-                labels: { 
-                    padding: 30, 
-                    usePointStyle: true, 
-                    pointStyle: 'circle',
-                    font: { size: 12, weight: '800' },
-                    color: '#1e293b'
-                }
-            }
-        }
-    }
-});
 
 // 3. Service Performance Chart
 const svcCtx = document.getElementById('servicePerformanceChart').getContext('2d');

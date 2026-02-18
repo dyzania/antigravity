@@ -73,7 +73,7 @@ equeue-system/
 5. **tickets** - Queue tickets with full lifecycle
 6. **feedback** - Customer feedback with sentiment analysis
 7. **notifications** - Email/push notifications
-8. **chatbot_data** - Chatbot training data
+8. **ai_context** - AI knowledge base context
 9. **activity_logs** - System activity tracking
 
 ## Key Features Implemented
@@ -91,7 +91,7 @@ equeue-system/
 - Window and staff CRUD operations
 - Analytics and reporting
 - Sentiment analysis visualization
-- Chatbot data management interface
+- Chatbot AI context management interface
 - User management interface
 
 ## Files Created
@@ -144,41 +144,41 @@ equeue-system/
 
 Create these files in `public/staff/`:
 
-1. dashboard.php - Show window info and queue
-2. services.php - Toggle services on/off
-3. Interface to call next ticket
-4. Interface to complete transactions
+1.  dashboard.php - Show window info and queue
+2.  services.php - Toggle services on/off
+3.  Interface to call next ticket
+4.  Interface to complete transactions
 
 Create these API endpoints:
 
-1. api/call-ticket.php
-2. api/complete-ticket.php
-3. api/toggle-service.php
+1.  api/call-ticket.php
+2.  api/complete-ticket.php
+3.  api/toggle-service.php
 
 ### Step 2: Implement Admin Portal
 
 Create these files in `public/admin/`:
 
-1. dashboard.php - Live queue overview
-2. windows.php - CRUD for windows and staff
-3. analytics.php - Statistics and charts
-4. sentiment.php - Feedback analysis
-5. chatbot.php - Manage chatbot data
+1.  dashboard.php - Live queue overview
+2.  windows.php - CRUD for windows and staff
+3.  analytics.php - Statistics and charts
+4.  sentiment-analytics.php - Feedback analysis
+5.  chatbot.php - Manage AI context data
 
 ### Step 3: Add Notifications
 
-1. Implement email sending function
-2. Add web push notification support
-3. Trigger notifications on status changes
-4. Create notification templates
+1.  Implement email sending function
+2.  Add web push notification support
+3.  Trigger notifications on status changes
+4.  Create notification templates
 
 ### Step 4: Enhance Features
 
-1. Add charts/graphs to analytics
-2. Implement advanced sentiment analysis
-3. Add export functionality
-4. Create PDF reports
-5. Add QR code generation
+1.  Add charts/graphs to analytics
+2.  Implement advanced sentiment analysis
+3.  Add export functionality
+4.  Create PDF reports
+5.  Add QR code generation
 
 ## Default Credentials
 
@@ -214,21 +214,18 @@ All API endpoints return JSON:
 
 ### User Journey
 
-1. Register/Login → 2. View Queue → 3. Get Ticket → 4. Monitor Status → 5. Receive Call → 6. Complete Service → 7. Submit Feedback → Repeat
+1.  Register/Login → 2. View Queue → 3. Get Ticket → 4. Monitor Status → 5. Receive Call → 6. Complete Service → 7. Submit Feedback → Repeat
 
 ### Staff Journey
 
-1. Login → 2. Enable Services → 3. View Queue → 4. Call Next → 5. Serve Customer → 6. Complete → Repeat
+1.  Login → 2. Enable Services → 3. View Queue → 4. Call Next → 5. Serve Customer → 6. Complete → Repeat
 
 ### Admin Journey
 
-1. Login → 2. Monitor All Queues → 3. Manage Staff/Windows → 4. Review Analytics → 5. Check Feedback Sentiment → 6. Update Chatbot Data
+1.  Login → 2. Monitor All Queues → 3. Manage Staff/Windows → 4. Review Analytics → 5. Check Feedback Sentiment → 6. Update AI Context Data
 
 ## Next Steps for Deployment
 
-1. Update config.php with production settings
-2. Change default admin password
-3. Configure SMTP for emails
 4. Set up cron jobs for cleanup/reports
 5. Enable HTTPS
 6. Optimize database indexes

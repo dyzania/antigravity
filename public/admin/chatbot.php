@@ -24,9 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get current chatbot data
-// Initial data check handled by migration script
-// $chatbot_data is no longer needed as we call getContext() directly in the view
+// Get current context data handled by migration script or existing row
 ?>
 <?php
 if ($message): ?>

@@ -26,16 +26,20 @@ class Ticket {
             ];
         }
         
+        // Calculate initial queue position (Global Count + 1)
+        $stmt = $this->db->query("SELECT COUNT(*) + 1 as pos FROM tickets WHERE status = 'waiting' AND DATE(created_at) = CURDATE()");
+        $initialPos = $stmt->fetch()['pos'] ?? 1;
+
         // Generate unique ticket number
         $ticketNumber = $this->generateTicketNumber($serviceId);
         
         // Insert ticket
         $stmt = $this->db->prepare("
-            INSERT INTO tickets (ticket_number, user_id, service_id, status, user_note) 
-            VALUES (?, ?, ?, 'waiting', ?)
+            INSERT INTO tickets (ticket_number, user_id, service_id, status, user_note, queue_position) 
+            VALUES (?, ?, ?, 'waiting', ?, ?)
         ");
         
-        $stmt->execute([$ticketNumber, $userId, $serviceId, $userNote]);
+        $stmt->execute([$ticketNumber, $userId, $serviceId, $userNote, $initialPos]);
         $ticketId = $this->db->lastInsertId();
         
         // Update queue position
@@ -316,13 +320,18 @@ class Ticket {
     }
 
     public function getInitialQueuePosition($ticketId) {
-        $stmt = $this->db->prepare("SELECT created_at, status FROM tickets WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT queue_position, created_at, status FROM tickets WHERE id = ?");
         $stmt->execute([$ticketId]);
         $target = $stmt->fetch();
         if (!$target) return 0;
 
-        // Count tickets created before this one that were NOT yet completed/cancelled at the time this ticket was created
-        // This represents the "Position in Queue" at the moment they joined.
+        // Use stored position if available
+        if ($target['queue_position'] !== null && $target['queue_position'] > 0) {
+            return $target['queue_position'];
+        }
+
+        // Fallback: This is the logic the user felt was wrong, but we keep it for legacy 
+        // until new tickets are created with stored positions.
         $stmt = $this->db->prepare("
             SELECT COUNT(*) + 1 as pos
             FROM tickets
@@ -476,20 +485,26 @@ class Ticket {
     }
     
     public function completeTicket($ticketId, $staffNotes = null) {
-        $stmt = $this->db->prepare("
-            UPDATE tickets 
-            SET status = 'completed', completed_at = NOW(), staff_notes = ? 
-            WHERE id = ?
-        ");
+        // Get ticket status and archival state
+        $ticket = $this->getTicketById($ticketId);
+        if (!$ticket) return false;
+
+        $sql = "UPDATE tickets SET status = 'completed', completed_at = NOW(), is_archived = 0, staff_notes = ? ";
         
+        // Accumulate active serving time if the ticket was being served and not paused
+        if ($ticket['is_archived'] == 0 && ($ticket['status'] === 'serving' || $ticket['status'] === 'called')) {
+            $sql .= ", service_time_accumulated = service_time_accumulated + TIMESTAMPDIFF(SECOND, served_at, NOW()) ";
+        }
+        
+        $sql .= " WHERE id = ?";
+        
+        $stmt = $this->db->prepare($sql);
         $success = $stmt->execute([$staffNotes, $ticketId]);
         
         if ($success) {
-             $ticketData = $this->getTicketById($ticketId);
-             
              // Trigger Notifications (Web Push + Email)
              sendNotification(
-                 $ticketData['user_id'], 
+                 $ticket['user_id'], 
                  $ticketId, 
                  'completed', 
                  "Transaction completed. Please provide your feedback.",
@@ -583,7 +598,7 @@ class Ticket {
 
     public function getArchivedTicketsByWindow($windowId) {
         $stmt = $this->db->prepare("
-            SELECT t.*, s.service_name, u.full_name as user_name,
+            SELECT t.*, s.service_name, s.service_code, u.full_name as user_name,
                    TIMESTAMPDIFF(SECOND, t.served_at, NOW()) as elapsed_seconds
             FROM tickets t
             JOIN services s ON t.service_id = s.id
@@ -600,7 +615,9 @@ class Ticket {
     public function archiveTicket($ticketId, $notes = null) {
         $stmt = $this->db->prepare("
             UPDATE tickets 
-            SET is_archived = 1, staff_notes = ? 
+            SET service_time_accumulated = service_time_accumulated + TIMESTAMPDIFF(SECOND, IFNULL(served_at, NOW()), NOW()),
+                is_archived = 1, 
+                staff_notes = ? 
             WHERE id = ?
         ");
         return $stmt->execute([$notes, $ticketId]);
@@ -609,7 +626,8 @@ class Ticket {
     public function resumeTicket($ticketId) {
         $stmt = $this->db->prepare("
             UPDATE tickets 
-            SET is_archived = 0 
+            SET served_at = NOW(),
+                is_archived = 0 
             WHERE id = ?
         ");
         return $stmt->execute([$ticketId]);
@@ -707,7 +725,7 @@ class Ticket {
     public function getUserTicketHistory($userId) {
         $stmt = $this->db->prepare("
             SELECT t.*, s.service_name, s.service_code, w.window_number,
-                   TIMESTAMPDIFF(SECOND, t.served_at, t.completed_at) as processing_seconds
+                   t.service_time_accumulated as processing_seconds
             FROM tickets t
             JOIN services s ON t.service_id = s.id
             LEFT JOIN windows w ON t.window_id = w.id
@@ -761,40 +779,36 @@ class Ticket {
     public function getGlobalDailyAverageProcessTime() {
         // Get average processing time from all tickets completed today
         $stmt = $this->db->prepare("
-            SELECT AVG(TIMESTAMPDIFF(MINUTE, served_at, completed_at)) as avg_minutes
+            SELECT AVG(service_time_accumulated) as avg_seconds
             FROM tickets
             WHERE status = 'completed'
-            AND served_at IS NOT NULL
-            AND completed_at IS NOT NULL
             AND DATE(completed_at) = CURDATE()
         ");
         
         $stmt->execute();
         $result = $stmt->fetch();
         
-        if ($result['avg_minutes']) {
-            return round($result['avg_minutes']);
+        if ($result['avg_seconds']) {
+            return round($result['avg_seconds'] / 60);
         }
 
         // Fallback: Get average from the last 7 days across all services
         $stmt = $this->db->prepare("
-            SELECT AVG(TIMESTAMPDIFF(MINUTE, served_at, completed_at)) as avg_minutes
+            SELECT AVG(service_time_accumulated) as avg_seconds
             FROM tickets
             WHERE status = 'completed'
-            AND served_at IS NOT NULL
-            AND completed_at IS NOT NULL
             AND DATE(completed_at) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
         ");
         $stmt->execute();
         $result = $stmt->fetch();
 
-        return $result['avg_minutes'] ? round($result['avg_minutes']) : 3;
+        return $result['avg_seconds'] ? round($result['avg_seconds'] / 60) : 3;
     }
 
     public function getGlobalHistory($startDate = null, $endDate = null) {
         $query = "
             SELECT t.*, s.service_name, u.full_name as user_name, w.window_name, w.window_number,
-                   TIMESTAMPDIFF(SECOND, t.served_at, t.completed_at) as processing_seconds
+                   t.service_time_accumulated as processing_seconds
             FROM tickets t
             JOIN services s ON t.service_id = s.id
             JOIN users u ON t.user_id = u.id
@@ -838,7 +852,7 @@ class Ticket {
         $stmt = $this->db->prepare("
             SELECT 
                 COUNT(*) as total_served,
-                AVG(TIMESTAMPDIFF(SECOND, t.served_at, t.completed_at)) as avg_processing_seconds,
+                AVG(t.service_time_accumulated) as avg_processing_seconds,
                 (SELECT AVG(f.rating) 
                  FROM feedback f 
                  JOIN tickets t2 ON f.ticket_id = t2.id 
@@ -869,18 +883,16 @@ class Ticket {
     }
     public function getGlobalAverageProcessTime() {
         $stmt = $this->db->prepare("
-            SELECT AVG(TIMESTAMPDIFF(MINUTE, served_at, completed_at)) as avg_minutes
+            SELECT AVG(service_time_accumulated) as avg_seconds
             FROM tickets
             WHERE status = 'completed'
-            AND served_at IS NOT NULL
-            AND completed_at IS NOT NULL
             AND DATE(completed_at) = CURDATE()
         ");
         
         $stmt->execute();
         $result = $stmt->fetch();
         
-        return $result['avg_minutes'] ? round($result['avg_minutes']) : 0;
+        return $result['avg_seconds'] ? round($result['avg_seconds'] / 60) : 0;
     }
 
     public function getPeakHour() {

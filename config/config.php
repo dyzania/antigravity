@@ -312,9 +312,13 @@ function injectTailwindConfig() {
                         'ultra': '2500px',
                     },
                     boxShadow: {
-                        'premium': '0 20px 50px -12px rgba(0, 0, 0, 0.08), 0 10px 30px -10px rgba(0, 0, 0, 0.03)',
-                        'division': '0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 5px 15px -5px rgba(0, 0, 0, 0.02)',
-                        'primary-premium': '0 25px 60px -15px rgba(12, 75, 5, 0.15)',
+                        'premium': '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 30px -10px rgba(0, 0, 0, 0.15)',
+                        'division': '0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.1)',
+                        'primary-premium': '0 30px 60px -15px rgba(12, 75, 5, 0.3)',
+                        'hover-xl': '0 35px 70px -15px rgba(0, 0, 0, 0.3)',
+                        'xl': '0 20px 40px -5px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.1)',
+                        '2xl': '0 30px 60px -10px rgba(0, 0, 0, 0.25), 0 15px 30px -5px rgba(0, 0, 0, 0.15)',
+                        'ultra': '0 35px 70px -15px rgba(0, 0, 0, 0.35), 0 15px 15px -10px rgba(0, 0, 0, 0.1)',
                     },
                     animation: {
                         'gradient': 'gradient 8s linear infinite',
@@ -342,15 +346,19 @@ function injectTailwindConfig() {
         }
         h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; }
         .glass-morphism {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.08);
+        }
+        .division-shadow {
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.1);
         }
         .dark .glass-morphism {
-            background: rgba(17, 24, 39, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
         }
         
         /* Modern Mesh Gradient */
