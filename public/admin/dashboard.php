@@ -194,17 +194,13 @@ function formatDuration($seconds) {
             </div>
             <div class="grid grid-cols-2 gap-4 5xl:gap-12 h-full">
                 <div class="bg-white rounded-2xl 5xl:rounded-[48px] p-6 5xl:p-16 shadow-xl shadow-slate-300/50 border border-slate-300 flex flex-col items-center justify-center h-full text-center">
-                    <?php 
-                        $globalAvg = $ticketModel->getGlobalAverageProcessTime();
-                        $isGlobalOverSLA = $globalAvg > 10; // Default SLA target 10 mins
-                    ?>
-                    <div class="<?php echo $isGlobalOverSLA ? 'text-rose-500' : 'text-slate-300'; ?> mb-2 5xl:mb-8">
-                        <i class="fas <?php echo $isGlobalOverSLA ? 'fa-triangle-exclamation' : 'fa-stopwatch'; ?> text-2xl 3xl:text-4xl 5xl:text-7xl"></i>
+                    <div class="text-slate-300 mb-2 5xl:mb-8">
+                        <i class="fas fa-desktop text-2xl 3xl:text-4xl 5xl:text-7xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-[10px] 3xl:text-sm 5xl:text-3xl font-black uppercase tracking-widest text-slate-400 mb-1 5xl:mb-4">Avg Processing</h3>
-                        <p class="text-3xl 3xl:text-5xl 5xl:text-8xl font-black <?php echo $isGlobalOverSLA ? 'text-rose-600 animate-pulse' : 'text-gray-900'; ?> leading-none">
-                            <?php echo $globalAvg; ?> <span class="text-xs 3xl:text-sm 5xl:text-2xl text-slate-400 font-bold">min</span>
+                        <h3 class="text-[10px] 3xl:text-sm 5xl:text-3xl font-black uppercase tracking-widest text-slate-400 mb-1 5xl:mb-4">Active Windows</h3>
+                        <p class="text-3xl 3xl:text-5xl 5xl:text-8xl font-black text-gray-900 leading-none">
+                            <?php echo count($activeWindows); ?>
                         </p>
                     </div>
                 </div>
