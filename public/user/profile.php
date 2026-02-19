@@ -15,15 +15,32 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullName = sanitize($_POST['full_name']);
     $schoolId = !empty($_POST['school_id']) ? sanitize($_POST['school_id']) : null;
+    $currentPassword = $_POST['current_password'];
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm_password'];
 
     if (empty($fullName)) {
         $error = "Full name is required.";
-    } elseif (!empty($password) && $password !== $confirmPassword) {
-        $error = "Passwords do not match.";
-    } else {
+    } elseif (!empty($password)) {
+        if (empty($currentPassword)) {
+            $error = "Current password is required to set a new one.";
+        } elseif (!password_verify($currentPassword, $user['password'])) {
+            $error = "Incorrect current password.";
+        } elseif ($password !== $confirmPassword) {
+            $error = "New passwords do not match.";
+        } elseif (!empty($passwordErrors = User::validatePassword($password))) {
+            $error = $passwordErrors[0];
+        }
+    }
+
+    if (empty($error)) {
         if ($userModel->updateProfile(getUserId(), $fullName, $schoolId, !empty($password) ? $password : null)) {
+            if (!empty($password)) {
+                // Password updated successfully - Auto Logout for security
+                session_destroy();
+                header("Location: ../login.php?update=password_success");
+                exit;
+            }
             $_SESSION['full_name'] = $fullName;
             $_SESSION['school_id'] = $schoolId;
             $success = "Profile updated successfully!";
@@ -59,9 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h1 class="text-4xl 3xl:text-7xl font-black text-gray-900 font-heading tracking-tight leading-none">Your Profile</h1>
                         <p class="text-gray-500 font-medium mt-2 3xl:text-xl">Manage your personal information and security.</p>
                     </div>
-                    <a href="dashboard.php" class="px-6 py-3 bg-white border border-slate-200 text-gray-600 rounded-2xl font-bold hover:bg-slate-50 transition-all flex items-center shadow-division">
-                        <i class="fas fa-arrow-left mr-2 opacity-50"></i>Back to Dashboard
-                    </a>
                 </div>
             </div>
 
@@ -85,9 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="relative z-10">
                             <div class="w-32 h-32 bg-primary-50 rounded-[40px] flex items-center justify-center mx-auto mb-6 relative">
                                 <img class="w-28 h-28 rounded-[32px] object-cover" src="https://ui-avatars.com/api/?name=<?php echo urlencode($user['full_name']); ?>&background=15803d&color=fff&size=128&font-size=0.33" alt="">
-                                <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-2xl shadow-lg flex items-center justify-center text-primary-600 group-hover:scale-110 transition-transform">
-                                    <i class="fas fa-camera text-sm"></i>
-                                </div>
                             </div>
                             <h2 class="text-2xl font-black text-gray-900 font-heading tracking-tight"><?php echo $user['full_name']; ?></h2>
                             <p class="text-gray-400 font-bold text-xs uppercase tracking-widest mt-1">
@@ -133,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                     <div class="relative group">
                                         <label class="absolute -top-2 left-6 px-2 bg-white text-[10px] font-black uppercase tracking-widest text-primary-600 z-10">School ID (Optional)</label>
-                                        <input type="text" name="school_id" value="<?php echo htmlspecialchars($user['school_id'] ?? ''); ?>" placeholder="e.g. 2024-0001" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-primary-100 focus:bg-white focus:border-primary-500 transition-all font-bold text-gray-700">
+                                        <input type="text" name="school_id" value="<?php echo htmlspecialchars($user['school_id'] ?? ''); ?>" placeholder="" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-primary-100 focus:bg-white focus:border-primary-500 transition-all font-bold text-gray-700">
                                     </div>
                                     <div class="relative group opacity-60">
                                         <label class="absolute -top-2 left-6 px-2 bg-white text-[10px] font-black uppercase tracking-widest text-gray-400 z-10">Email Address (Read-only)</label>
@@ -149,14 +160,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                     Security
                                 </h3>
+                                <div class="grid grid-cols-1 gap-6 mb-6">
+                                    <div class="relative group">
+                                        <label class="absolute -top-2 left-6 px-2 bg-white text-[10px] font-black uppercase tracking-widest text-primary-600 z-10">Current Password</label>
+                                        <input type="password" id="current_password" name="current_password" placeholder="••••••••" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-primary-50 focus:bg-white focus:border-primary-500 transition-all font-bold text-gray-700">
+                                        <button type="button" onclick="togglePassword('current_password', this)" class="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div class="relative group">
                                         <label class="absolute -top-2 left-6 px-2 bg-white text-[10px] font-black uppercase tracking-widest text-amber-600 z-10">New Password</label>
-                                        <input type="password" name="password" placeholder="Leave blank to keep current" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-amber-50 focus:bg-white focus:border-amber-500 transition-all font-bold text-gray-700">
+                                        <input type="password" id="password" name="password" placeholder="••••••••" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-amber-50 focus:bg-white focus:border-amber-500 transition-all font-bold text-gray-700">
+                                        <button type="button" onclick="togglePassword('password', this)" class="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-amber-600 transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <div class="mt-2 ml-4">
+                                            <p class="text-[10px] text-gray-400 font-medium leading-relaxed">
+                                                <i class="fas fa-info-circle mr-1 opacity-50"></i>
+                                                8+ characters, with uppercase, lowercase, number, and symbol.
+                                            </p>
+                                        </div>
                                     </div>
                                     <div class="relative group">
                                         <label class="absolute -top-2 left-6 px-2 bg-white text-[10px] font-black uppercase tracking-widest text-amber-600 z-10">Confirm Password</label>
-                                        <input type="password" name="confirm_password" placeholder="Re-type new password" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-amber-50 focus:bg-white focus:border-amber-500 transition-all font-bold text-gray-700">
+                                        <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[24px] focus:outline-none focus:ring-4 focus:ring-amber-50 focus:bg-white focus:border-amber-500 transition-all font-bold text-gray-700">
+                                        <button type="button" onclick="togglePassword('confirm_password', this)" class="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-amber-600 transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -176,5 +208,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php include __DIR__ . '/../../includes/chatbot-widget.php'; ?>
     <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

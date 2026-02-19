@@ -10,10 +10,13 @@ class Service {
     
     public function getAllServices() {
         $stmt = $this->db->prepare("
-            SELECT * 
-            FROM services 
-            WHERE is_active = 1
-            ORDER BY service_name
+            SELECT s.*, 
+                   (SELECT COUNT(*) 
+                    FROM window_services ws 
+                    WHERE ws.service_id = s.id AND ws.is_enabled = 1) as staff_enabled_count
+            FROM services s 
+            WHERE s.is_active = 1
+            ORDER BY s.service_name
         ");
         
         $stmt->execute();

@@ -9,8 +9,9 @@ if (!isset($_SESSION['reset_user_id'])) {
     exit;
 }
 
-$error = null;
-$success = null;
+$userModel = new User();
+$targetUser = $userModel->getUserById($_SESSION['reset_user_id']);
+$userRole = $targetUser['role'] ?? 'user';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
@@ -19,9 +20,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirmPassword) {
         $error = "Passwords do not match.";
     } else {
-        $userModel = new User();
-        // Reset password
-        if ($userModel->resetPassword($_SESSION['reset_user_id'], $password)) {
+        $passwordErrors = [];
+        if ($userRole === 'user') {
+            $passwordErrors = User::validatePassword($password);
+        } else {
+            // Simple validation for Staff/Admin
+            if (strlen($password) < 8) {
+                $passwordErrors[] = "Password must be at least 8 characters long.";
+            }
+        }
+
+        if (!empty($passwordErrors)) {
+            $error = $passwordErrors[0];
+        } else {
+            // Reset password
+            if ($userModel->resetPassword($_SESSION['reset_user_id'], $password)) {
             // Clear session variable
             unset($_SESSION['reset_user_id']);
             
@@ -29,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: login.php?reset=success');
             exit;
         } else {
-            $error = "Failed to reset password. Please try again.";
+                $error = "Failed to reset password. Please try again.";
+            }
         }
     }
 }
@@ -69,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <?php if ($error): ?>
-            <div class="p-4 mb-6 text-sm text-secondary-600 bg-secondary-100 rounded-xl border border-secondary-200 flex items-center justify-center animate-shake">
+            <div class="p-4 mb-6 text-sm text-primary-600 bg-primary-100 rounded-xl border border-primary-200 flex items-center justify-center animate-shake">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 <span class="font-bold"><?php echo $error; ?></span>
             </div>
@@ -80,19 +94,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="block text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="password">New Password</label>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                        <i class="fas fa-key text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                        <i class="fas fa-key text-gray-400 group-focus-within:text-primary-600 transition-colors"></i>
                     </div>
-                    <input type="password" id="password" name="password" required class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all font-bold text-gray-800 placeholder-gray-400 shadow-sm" placeholder="••••••••">
+                    <input type="password" id="password" name="password" required class="w-full pl-12 pr-12 py-4 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-600/10 focus:border-primary-600 transition-all font-bold text-gray-800 placeholder-gray-400 shadow-sm" placeholder="••••••••">
+                    <button type="button" onclick="togglePassword('password', this)" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary-600 transition-colors">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
+                <?php if ($userRole === 'user'): ?>
+                <p class="mt-2 text-[10px] text-gray-400 font-medium ml-1">
+                    <i class="fas fa-info-circle mr-1 opacity-50"></i>
+                    Must contain at least 8 characters, including uppercase, lowercase, number, and special character.
+                </p>
+                <?php else: ?>
+                <p class="mt-2 text-[10px] text-gray-400 font-medium ml-1">
+                    <i class="fas fa-info-circle mr-1 opacity-50"></i>
+                    Minimum of 8 characters required.
+                </p>
+                <?php endif; ?>
             </div>
 
             <div class="space-y-2 text-left">
                 <label class="block text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="confirm_password">Confirm Password</label>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                        <i class="fas fa-check-double text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                        <i class="fas fa-check-double text-gray-400 group-focus-within:text-primary-600 transition-colors"></i>
                     </div>
-                    <input type="password" id="confirm_password" name="confirm_password" required class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all font-bold text-gray-800 placeholder-gray-400 shadow-sm" placeholder="••••••••">
+                    <input type="password" id="confirm_password" name="confirm_password" required class="w-full pl-12 pr-12 py-4 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-600/10 focus:border-primary-600 transition-all font-bold text-gray-800 placeholder-gray-400 shadow-sm" placeholder="••••••••">
+                    <button type="button" onclick="togglePassword('confirm_password', this)" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary-600 transition-colors">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
             </div>
 
@@ -102,5 +133,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </form>
     </div>
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

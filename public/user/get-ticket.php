@@ -106,15 +106,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
             <!-- Walk-in Tab Content -->
         <div id="walkinContent" class="tab-content">
             <?php if ($error): ?>
-                <div class="p-6 3xl:p-10 mb-10 text-secondary-800 bg-secondary-50 rounded-3xl 3xl:rounded-[32px] border border-secondary-100 flex items-center shadow-premium" role="alert">
+                <div class="p-6 3xl:p-10 mb-10 text-primary-800 bg-primary-50 rounded-3xl 3xl:rounded-[32px] border border-primary-100 flex items-center shadow-premium" role="alert">
                     <i class="fas fa-exclamation-triangle mr-4 text-2xl 3xl:text-4xl"></i>
                     <span class="font-bold text-lg 3xl:text-3xl"><?php echo $error; ?></span>
                 </div>
             <?php endif; ?>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-6">
-                <?php $counter = 1; foreach ($services as $service): ?>
-                    <div class="bg-white rounded-[24px] md:rounded-[32px] 3xl:rounded-[48px] shadow-division border border-white hover:shadow-premium hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col h-full group">
+                <?php $counter = 1; foreach ($services as $service): 
+                    $isAvailable = $service['staff_enabled_count'] > 0;
+                ?>
+                    <div class="bg-white rounded-[24px] md:rounded-[32px] 3xl:rounded-[48px] shadow-division border border-white <?php echo $isAvailable ? 'hover:shadow-premium hover:-translate-y-1.5' : 'grayscale opacity-60 cursor-not-allowed'; ?> transition-all duration-500 overflow-hidden flex flex-col h-full group relative">
+                        <?php if (!$isAvailable): ?>
+                            <div class="absolute top-4 right-4 z-20">
+                                <span class="bg-rose-100 text-rose-600 text-[8px] md:text-[10px] font-black px-3 py-1 rounded-full border border-rose-200 uppercase tracking-widest shadow-sm">
+                                    <i class="fas fa-plug-circle-xmark mr-1"></i>Offline
+                                </span>
+                            </div>
+                        <?php endif; ?>
                         <!-- Card Header -->
                         <div class="px-5 md:px-8 pt-6 md:pt-8 3xl:pt-10 pb-2 md:pb-3 relative overflow-hidden">
                             <div class="bg-primary-600 w-10 md:w-12 h-10 md:h-12 3xl:w-16 3xl:h-16 rounded-lg md:rounded-xl 3xl:rounded-[24px] flex items-center justify-center text-white shadow-lg shadow-primary-100 mb-3 md:mb-4 group-hover:rotate-6 transition-transform">
@@ -153,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                                     <i class="fas fa-bolt text-amber-500 text-[10px] 3xl:text-xl"></i>
                                     <div>
                                         <p class="text-[8px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">Process Time</p>
-                                        <p class="text-[10px] md:text-xs 3xl:text-lg font-black text-gray-900">Est. <?php echo $ticketModel->getAverageProcessTime($service['id']); ?> Minutes</p>
+                                        <p class="text-[10px] md:text-xs 3xl:text-lg font-black text-gray-900">Est. <?php echo formatMinutes($ticketModel->getAverageProcessTime($service['id'])); ?></p>
                                     </div>
                                 </div>
 
@@ -168,9 +177,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                             <!-- Footer: Stays pinned to the bottom -->
                             <form id="form-<?php echo $service['id']; ?>" method="POST" action="" class="pb-8 md:pb-10 pt-6">
                                 <input type="hidden" name="service_id" value="<?php echo $service['id']; ?>">
-                                <button type="submit" class="w-full bg-slate-900 text-white py-3 md:py-4 3xl:py-6 rounded-lg md:rounded-xl 3xl:rounded-2xl font-black text-xs md:text-sm 3xl:text-xl shadow-lg shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center space-x-2">
-                                    <span>Get Ticket</span>
-                                    <i class="fas fa-ticket-alt"></i>
+                                <button type="submit" <?php echo !$isAvailable ? 'disabled' : ''; ?> class="w-full <?php echo $isAvailable ? 'bg-slate-900 hover:bg-black shadow-slate-200' : 'bg-slate-300 cursor-not-allowed'; ?> text-white py-3 md:py-4 3xl:py-6 rounded-lg md:rounded-xl 3xl:rounded-2xl font-black text-xs md:text-sm 3xl:text-xl shadow-lg transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                    <span><?php echo $isAvailable ? 'Get Ticket' : 'Currently Unavailable'; ?></span>
+                                    <i class="fas <?php echo $isAvailable ? 'fa-ticket-alt' : 'fa-clock-rotate-left opacity-50'; ?>"></i>
                                 </button>
                             </form>
                         </div>
@@ -184,8 +193,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
         <div id="appointmentContent" class="tab-content hidden">
             <!-- Service Cards for Appointment -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-6">
-                    <?php $counter = 1; foreach ($services as $service): ?>
-                        <div class="bg-white rounded-[24px] md:rounded-[32px] 3xl:rounded-[48px] shadow-division border border-white hover:shadow-premium hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col h-full group">
+                    <?php $counter = 1; foreach ($services as $service): 
+                        $isAvailable = $service['staff_enabled_count'] > 0;
+                    ?>
+                        <div class="bg-white rounded-[24px] md:rounded-[32px] 3xl:rounded-[48px] shadow-division border border-white <?php echo $isAvailable ? 'hover:shadow-premium hover:-translate-y-1.5' : 'grayscale opacity-60 cursor-not-allowed'; ?> transition-all duration-500 overflow-hidden flex flex-col h-full group relative">
+                            <?php if (!$isAvailable): ?>
+                                <div class="absolute top-4 right-4 z-20">
+                                    <span class="bg-rose-100 text-rose-600 text-[8px] md:text-[10px] font-black px-3 py-1 rounded-full border border-rose-200 uppercase tracking-widest shadow-sm">
+                                        <i class="fas fa-plug-circle-xmark mr-1"></i>Offline
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                             <!-- Card Header -->
                             <div class="px-5 md:px-8 pt-6 md:pt-8 3xl:pt-10 pb-2 md:pb-3 relative overflow-hidden">
                                 <div class="bg-primary-600 w-10 md:w-12 h-10 md:h-12 3xl:w-16 3xl:h-16 rounded-lg md:rounded-xl 3xl:rounded-[24px] flex items-center justify-center text-white shadow-lg shadow-primary-100 mb-3 md:mb-4 group-hover:rotate-6 transition-transform">
@@ -224,16 +242,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
                                         <i class="fas fa-bolt text-amber-500 text-[10px] 3xl:text-xl"></i>
                                         <div>
                                             <p class="text-[8px] 3xl:text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">Process Time</p>
-                                            <p class="text-[10px] md:text-xs 3xl:text-lg font-black text-gray-900">Est. <?php echo $ticketModel->getAverageProcessTime($service['id']); ?> Minutes</p>
+                                            <p class="text-[10px] md:text-xs 3xl:text-lg font-black text-gray-900">Est. <?php echo formatMinutes($ticketModel->getAverageProcessTime($service['id'])); ?></p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Footer: Stays pinned to the bottom -->
                                 <div class="pb-8 md:pb-10 pt-6">
-                                    <button onclick="openAppointmentModal(<?php echo $service['id']; ?>, '<?php echo htmlspecialchars($service['service_name']); ?>')" class="w-full bg-slate-900 text-white py-3 md:py-4 3xl:py-6 rounded-lg md:rounded-xl 3xl:rounded-2xl font-black text-xs md:text-sm 3xl:text-xl shadow-lg shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center space-x-2">
-                                        <span>Schedule Ticket</span>
-                                        <i class="fas fa-calendar-check"></i>
+                                    <button onclick="<?php echo $isAvailable ? 'openAppointmentModal(' . $service['id'] . ', \'' . htmlspecialchars($service['service_name']) . '\')' : 'void(0)'; ?>" <?php echo !$isAvailable ? 'disabled' : ''; ?> class="w-full <?php echo $isAvailable ? 'bg-slate-900 hover:bg-black shadow-slate-200' : 'bg-slate-300 cursor-not-allowed'; ?> text-white py-3 md:py-4 3xl:py-6 rounded-lg md:rounded-xl 3xl:rounded-2xl font-black text-xs md:text-sm 3xl:text-xl shadow-lg transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                        <span><?php echo $isAvailable ? 'Schedule Ticket' : 'Temporarily Offline'; ?></span>
+                                        <i class="fas <?php echo $isAvailable ? 'fa-calendar-check' : 'fa-calendar-xmark opacity-50'; ?>"></i>
                                     </button>
                                 </div>
                             </div>

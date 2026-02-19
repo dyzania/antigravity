@@ -43,7 +43,10 @@ if (isset($_GET['verified'])) {
     $success = "Email verified successfully! You can now sign in.";
 }
 if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
-    $success = "Password updated successfully. Please login with your new password.";
+    $success = "Password reset successfully. Please login with your new password.";
+}
+if (isset($_GET['update']) && $_GET['update'] === 'password_success') {
+    $success = "Password updated successfully. Please login with your new credentials.";
 }
 ?>
 <!DOCTYPE html>
@@ -122,14 +125,14 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
             </div>
 
             <?php if (isset($error)): ?>
-                <div class="p-5 mb-8 text-sm text-secondary-400 bg-secondary-500/10 rounded-2xl border border-secondary-500/20 flex items-center animate-shake">
+                <div class="p-5 mb-8 text-sm text-primary-400 bg-primary-500/10 rounded-2xl border border-primary-500/20 flex items-center animate-shake">
                     <i class="fas fa-shield-virus mr-4 text-xl"></i>
                     <span class="font-bold uppercase tracking-widest text-[10px]"><?php echo $error; ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($success)): ?>
-                <div class="p-5 mb-8 text-sm text-primary-400 bg-primary-500/10 rounded-2xl border border-primary-500/20 flex items-center">
+                <div class="p-5 mb-8 text-sm text-secondary-400 bg-secondary-500/10 rounded-2xl border border-secondary-500/20 flex items-center">
                     <i class="fas fa-check-double mr-4 text-xl"></i>
                     <span class="font-bold uppercase tracking-widest text-[10px]"><?php echo $success; ?></span>
                 </div>
@@ -142,14 +145,14 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
                     <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Email</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-600 group-focus-within:text-primary-500 transition-colors text-lg"></i>
+                            <i class="fas fa-envelope text-gray-600 group-focus-within:text-white transition-colors text-lg"></i>
                         </div>
                         <input 
                             type="text" 
                             id="email" 
                             name="email" 
                             required
-                            class="w-full pl-16 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600"
+                            class="w-full pl-16 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600"
                             placeholder="Email or Local ID"
                         >
                     </div>
@@ -162,16 +165,19 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
                     </div>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                            <i class="fas fa-key text-gray-600 group-focus-within:text-primary-500 transition-colors text-lg"></i>
+                            <i class="fas fa-key text-gray-600 group-focus-within:text-white transition-colors text-lg"></i>
                         </div>
                         <input 
                             type="password" 
                             id="password" 
                             name="password" 
                             required
-                            class="w-full pl-16 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600"
+                            class="w-full pl-16 pr-12 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600"
                             placeholder="••••••••"
                         >
+                        <button type="button" onclick="togglePassword('password', this)" class="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-600 hover:text-white transition-colors">
+                            <i class="fas fa-eye text-lg"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -191,5 +197,20 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
         </div>
     </div>
 
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

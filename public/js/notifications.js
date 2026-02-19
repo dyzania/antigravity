@@ -241,8 +241,8 @@ if (typeof EQueueNotifications === "undefined") {
       } else if (notif.type === "completed" || notif.type === "success") {
         title = notif.title || "Success";
         iconClass = "fa-check-circle";
-        colorClass = "text-blue-600";
-        bgClass = "bg-blue-50";
+        colorClass = "text-emerald-600";
+        bgClass = "bg-emerald-50";
       } else if (notif.type === "now_serving" || notif.type === "serving") {
         title = notif.title || "Now Serving";
         iconClass = "fa-play-circle";

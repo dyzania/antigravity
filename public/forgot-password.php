@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <?php if ($error): ?>
-            <div class="p-4 mb-6 text-sm text-secondary-600 bg-secondary-100 rounded-xl border border-secondary-200 flex items-center justify-center animate-shake">
+            <div class="p-4 mb-6 text-sm text-primary-600 bg-primary-100 rounded-xl border border-primary-200 flex items-center justify-center animate-shake">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 <span class="font-bold"><?php echo $error; ?></span>
             </div>
@@ -76,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="block text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Email Address</label>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                        <i class="fas fa-envelope text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                        <i class="fas fa-envelope text-gray-400 group-focus-within:text-primary-600 transition-colors"></i>
                     </div>
-                    <input type="email" id="email" name="email" required class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all font-bold text-gray-800 placeholder-gray-400 shadow-sm" placeholder="john@example.com">
+                    <input type="email" id="email" name="email" required class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-600/10 focus:border-primary-600 transition-all font-bold text-gray-800 placeholder-gray-400 shadow-sm" placeholder="john@example.com">
                 </div>
             </div>
 

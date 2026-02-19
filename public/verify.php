@@ -40,7 +40,7 @@ if (isset($_GET['token'])) {
     </div>
 
     <div class="max-w-md w-full glass-morphism p-8 rounded-3xl shadow-2xl border border-white/20 text-center">
-        <div class="w-20 h-20 <?php echo $success ? 'bg-primary-100 text-primary-600' : 'bg-secondary-100 text-secondary-600'; ?> rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+        <div class="w-20 h-20 <?php echo $success ? 'bg-secondary-100 text-secondary-600' : 'bg-primary-100 text-primary-600'; ?> rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
             <i class="fas <?php echo $success ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?> text-4xl"></i>
         </div>
         

@@ -133,5 +133,44 @@ class MailService {
             return false;
         }
     }
+
+    public function sendAnnouncementEmail($toEmail, $fullName, $title, $content) {
+        $mail = $this->getMailer();
+        if (!$mail) return false;
+
+        try {
+            $mail->addAddress($toEmail, $fullName);
+            $mail->isHTML(true);
+            $mail->Subject = 'New Announcement: ' . $title;
+            
+            $mail->Body    = "
+                <div style='font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #ffffff;'>
+                    <div style='text-align: center; margin-bottom: 20px;'>
+                        <h1 style='color: #8b0101; margin: 0; font-size: 24px;'>" . APP_NAME . "</h1>
+                        <p style='color: #64748b; font-size: 14px; margin-top: 5px;'>News & Updates</p>
+                    </div>
+                    
+                    <div style='background-color: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0;'>
+                        <h2 style='color: #1e293b; margin-top: 0; font-size: 20px; border-bottom: 2px solid #8b0101; padding-bottom: 10px;'>$title</h2>
+                        <div style='color: #334155; line-height: 1.6; font-size: 16px; margin-top: 20px;'>
+                            $content
+                        </div>
+                    </div>
+                    
+                    <div style='text-align: center; margin-top: 30px;'>
+                        <a href='" . BASE_URL . "/user/announcements.php' style='background-color: #8b0101; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>View in News Feed</a>
+                    </div>
+                    
+                    <hr style='border: 0; border-top: 1px solid #eee; margin: 30px 0;'>
+                    <p style='font-size: 12px; color: #64748b; text-align: center;'>This is an official announcement from " . APP_NAME . ".<br>You received this because you are a registered member.</p>
+                </div>
+            ";
+
+            return $mail->send();
+        } catch (Exception $e) {
+            error_log("Announcement Email Error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($userModel->emailExists($email)) {
                 $error_msg = "Email already exists";
+            } elseif (strlen($password) < 8) {
+                $error_msg = "Password must be at least 8 characters long";
             } else {
                 if ($userModel->register($email, $password, $full_name, null, $role)) {
                     $success_msg = "User created successfully";

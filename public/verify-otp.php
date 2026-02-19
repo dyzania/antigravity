@@ -89,14 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <?php if ($error): ?>
-            <div class="p-4 mb-6 text-sm text-secondary-600 bg-secondary-100 rounded-xl border border-secondary-200 flex items-center justify-center animate-shake">
+            <div class="p-4 mb-6 text-sm text-primary-600 bg-primary-100 rounded-xl border border-primary-200 flex items-center justify-center animate-shake">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 <span class="font-bold"><?php echo $error; ?></span>
             </div>
         <?php endif; ?>
 
         <?php if ($success): ?>
-            <div class="p-4 mb-6 text-sm text-primary-600 bg-primary-100 rounded-xl border border-primary-200 flex items-center justify-center">
+            <div class="p-4 mb-6 text-sm text-secondary-600 bg-secondary-100 rounded-xl border border-secondary-200 flex items-center justify-center">
                 <i class="fas fa-check-circle mr-2"></i>
                 <span class="font-bold"><?php echo $success; ?></span>
             </div>
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
                 <?php for($i=0; $i<6; $i++): ?>
-                    <input type="text" name="otp[]" maxlength="1" class="w-12 h-14 md:w-14 md:h-16 text-center text-2xl md:text-3xl font-black border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 outline-none transition-all shadow-sm bg-white/50 backdrop-blur-sm" required oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 1) { try { this.nextElementSibling.focus() } catch(e) {} }">
+                    <input type="text" name="otp[]" maxlength="1" class="w-12 h-14 md:w-14 md:h-16 text-center text-2xl md:text-3xl font-black border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 outline-none transition-all shadow-sm bg-white/50 backdrop-blur-sm" required oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 1) { try { this.nextElementSibling.focus() } catch(e) {} }">
                 <?php endfor; ?>
             </div>
 

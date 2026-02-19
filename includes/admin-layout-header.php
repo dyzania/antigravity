@@ -78,6 +78,9 @@ requireRole('admin');
             <a href="chatbot.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'chatbot.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-robot mr-4 text-lg"></i>AI Settings
             </a>
+            <a href="announcements.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'announcements.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
+                <i class="fas fa-bullhorn mr-4 text-lg"></i>Announcements
+            </a>
             <a href="history.php" class="flex items-center px-6 py-4 rounded-lg text-sm font-bold tracking-tight transition-all duration-300 <?php echo str_contains($_SERVER['PHP_SELF'], 'history.php') ? 'bg-primary-600/20 text-white border-l-4 border-white pl-5' : 'text-gray-400 hover:bg-white/5 hover:text-white' ?>">
                 <i class="fas fa-history mr-4 text-lg"></i>Ticket History
             </a>

@@ -156,6 +156,24 @@ function getUserId() {
     return $_SESSION['user_id'] ?? null;
 }
 
+/**
+ * Formats minutes into a human-readable string (Days, Hours, Minutes)
+ */
+function formatMinutes($totalMinutes) {
+    if ($totalMinutes <= 0) return "0 Minutes";
+    
+    $days = floor($totalMinutes / 1440);
+    $hours = floor(($totalMinutes % 1440) / 60);
+    $minutes = $totalMinutes % 60;
+    
+    $parts = [];
+    if ($days > 0) $parts[] = $days . ($days == 1 ? " Day" : " Days");
+    if ($hours > 0) $parts[] = $hours . ($hours == 1 ? " Hour" : " Hours");
+    if ($minutes > 0 || empty($parts)) $parts[] = $minutes . ($minutes == 1 ? " Minute" : " Minutes");
+    
+    return implode(", ", $parts);
+}
+
 // Security: CSRF Protection
 function generateCsrfToken() {
     if (empty($_SESSION['csrf_token'])) {
@@ -268,7 +286,6 @@ function injectTailwindConfig() {
     <script src='" . BASE_URL . "/js/live-status.js'></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -355,11 +372,6 @@ function injectTailwindConfig() {
         .division-shadow {
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.1);
         }
-        .dark .glass-morphism {
-            background: rgba(17, 24, 39, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
-        }
         
         /* Modern Mesh Gradient */
         .mesh-gradient-container {
@@ -375,12 +387,14 @@ function injectTailwindConfig() {
 
         .mesh-gradient-item {
             position: absolute;
-            width: 60vw;
-            height: 60vw;
+            width: 70vw;
+            height: 70vw;
             border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.15;
-            animation: mesh-float 20s infinite alternate ease-in-out;
+            filter: blur(100px);
+            opacity: 0.12;
+            animation: mesh-float 25s infinite alternate ease-in-out;
+            pointer-events: none;
+            will-change: transform;
         }
 
         .mesh-1 { background-color: #8b0101; top: -10%; left: -10%; animation-delay: 0s; }

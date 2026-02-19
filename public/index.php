@@ -107,6 +107,20 @@ if (isset($_SESSION['user_id'])) {
     <!-- Hero Section -->
     <section class="relative min-h-screen flex items-center pt-20 overflow-hidden hero-bg">
         <div class="container-ultra px-6 md:px-12 relative z-10 w-full">
+            <!-- Session Notifications -->
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="max-w-4xl mb-8 p-5 text-secondary-400 bg-secondary-500/10 rounded-2xl border border-secondary-500/20 flex items-center animate-in fade-in slide-in-from-top-4 duration-500">
+                    <i class="fas fa-check-circle mr-4 text-xl"></i>
+                    <span class="font-bold uppercase tracking-widest text-[10px]"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></span>
+                </div>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="max-w-4xl mb-8 p-5 text-primary-400 bg-primary-500/10 rounded-2xl border border-primary-500/20 flex items-center animate-shake">
+                    <i class="fas fa-exclamation-triangle mr-4 text-xl"></i>
+                    <span class="font-bold uppercase tracking-widest text-[10px]"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></span>
+                </div>
+            <?php endif; ?>
+
             <div class="max-w-4xl">
                 <div class="inline-flex items-center space-x-3 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-full mb-8 animate-pulse">
                     <span class="w-2 h-2 rounded-full bg-primary-500"></span>

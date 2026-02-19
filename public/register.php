@@ -16,26 +16,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirmPassword) {
         $error = "Access keys do not match.";
     } else {
-        $userModel = new User();
-        $mailService = new MailService();
-        
-        if ($userModel->emailExists($email)) {
-            $error = "Identity already registered in the grid.";
+        $passwordErrors = User::validatePassword($password);
+        if (!empty($passwordErrors)) {
+            $error = $passwordErrors[0];
         } else {
-            // Register and get OTP
-            $otpCode = $userModel->register($email, $password, $fullName, $schoolId, 'user');
+            $userModel = new User();
+            $mailService = new MailService();
             
-            if ($otpCode) {
-                // Send OTP Email
-                if ($mailService->sendOTPEmail($email, $fullName, $otpCode, 'verification')) {
-                    // Redirect to OTP verification page
-                    header("Location: verify-otp.php?email=" . urlencode($email) . "&context=verification");
-                    exit;
-                } else {
-                    $error = "Registration successful, but failed to send OTP. Please contact support.";
-                }
+            if ($userModel->emailExists($email)) {
+                $error = "Identity already registered in the grid.";
             } else {
-                $error = "Protocol failure. Identity or School ID already synchronized.";
+                // Register and get OTP
+                $otpCode = $userModel->register($email, $password, $fullName, $schoolId, 'user');
+                
+                if ($otpCode) {
+                    // Send OTP Email
+                    if ($mailService->sendOTPEmail($email, $fullName, $otpCode, 'verification')) {
+                        // Redirect to OTP verification page
+                        header("Location: verify-otp.php?email=" . urlencode($email) . "&context=verification");
+                        exit;
+                    } else {
+                        $error = "Registration successful, but failed to send OTP. Please contact support.";
+                    }
+                } else {
+                    $error = "Protocol failure. Identity or School ID already synchronized.";
+                }
             }
         }
     }
@@ -84,14 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <?php if (isset($error)): ?>
-                <div class="p-4 mb-6 text-sm text-secondary-400 bg-secondary-500/10 rounded-2xl border border-secondary-500/20 flex items-center animate-shake">
+                <div class="p-4 mb-6 text-sm text-primary-400 bg-primary-500/10 rounded-2xl border border-primary-500/20 flex items-center animate-shake">
                     <i class="fas fa-shield-virus mr-3 text-lg"></i>
                     <span class="font-bold uppercase tracking-widest text-[9px]"><?php echo $error; ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($success)): ?>
-                <div class="p-4 mb-6 text-sm text-primary-400 bg-primary-500/10 rounded-2xl border border-primary-500/20 flex items-center">
+                <div class="p-4 mb-6 text-sm text-secondary-400 bg-secondary-500/10 rounded-2xl border border-secondary-500/20 flex items-center">
                     <i class="fas fa-check-double mr-3 text-lg"></i>
                     <span class="font-bold uppercase tracking-widest text-[9px]"><?php echo $success; ?></span>
                 </div>
@@ -105,18 +110,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="full_name">Full Name</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <i class="fas fa-id-card text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                                <i class="fas fa-id-card text-gray-600 group-focus-within:text-white transition-colors"></i>
                             </div>
-                            <input type="text" id="full_name" name="full_name" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="John Doe">
+                            <input type="text" id="full_name" name="full_name" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600" placeholder="John Doe">
                         </div>
                     </div>
                     <div class="space-y-2 text-left">
                         <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="school_id">School ID</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <i class="fas fa-id-badge text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                                <i class="fas fa-id-badge text-gray-600 group-focus-within:text-white transition-colors"></i>
                             </div>
-                            <input type="text" id="school_id" name="school_id" class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="e.g. 2024-01">
+                            <input type="text" id="school_id" name="school_id" class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600" placeholder="e.g. 2024-01">
                         </div>
                     </div>
                 </div>
@@ -125,9 +130,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="email">Email</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope-open-text text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                            <i class="fas fa-envelope-open-text text-gray-600 group-focus-within:text-white transition-colors"></i>
                         </div>
-                        <input type="email" id="email" name="email" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="john@example.com">
+                        <input type="email" id="email" name="email" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600" placeholder="john@example.com">
                     </div>
                 </div>
 
@@ -136,18 +141,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="password">Password</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <i class="fas fa-key text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                                <i class="fas fa-key text-gray-600 group-focus-within:text-white transition-colors"></i>
                             </div>
-                            <input type="password" id="password" name="password" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="••••••••">
+                            <input type="password" id="password" name="password" required class="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600" placeholder="••••••••">
+                            <button type="button" onclick="togglePassword('password', this)" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-600 hover:text-white transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
+                        <p class="mt-2 text-[10px] text-gray-400 font-medium ml-1">
+                            <i class="fas fa-info-circle mr-1 opacity-50"></i>
+                            Must contain at least 8 characters, including uppercase, lowercase, number, and special character.
+                        </p>
                     </div>
                     <div class="space-y-2 text-left">
                         <label class="block text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1" for="confirm_password">Confirm Password</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <i class="fas fa-shield-check text-gray-600 group-focus-within:text-primary-500 transition-colors"></i>
+                                <i class="fas fa-shield-check text-gray-600 group-focus-within:text-white transition-colors"></i>
                             </div>
-                            <input type="password" id="confirm_password" name="confirm_password" required class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all font-medium text-white placeholder-gray-600" placeholder="••••••••">
+                            <input type="password" id="confirm_password" name="confirm_password" required class="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white transition-all font-medium text-white placeholder-gray-600" placeholder="••••••••">
+                            <button type="button" onclick="togglePassword('confirm_password', this)" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-600 hover:text-white transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -201,5 +216,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

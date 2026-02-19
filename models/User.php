@@ -7,6 +7,26 @@ class User {
     public function __construct() {
         $this->db = Database::getInstance()->getConnection();
     }
+
+    public static function validatePassword($password) {
+        $errors = [];
+        if (strlen($password) < 8) {
+            $errors[] = "Password must be at least 8 characters long.";
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = "Password must contain at least one uppercase letter.";
+        }
+        if (!preg_match('/[a-z]/', $password)) {
+            $errors[] = "Password must contain at least one lowercase letter.";
+        }
+        if (!preg_match('/[0-9]/', $password)) {
+            $errors[] = "Password must contain at least one number.";
+        }
+        if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+            $errors[] = "Password must contain at least one special character.";
+        }
+        return $errors;
+    }
     
     public function register($email, $password, $full_name, $school_id = null, $role = 'user') {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -118,7 +138,7 @@ class User {
     
     public function getUserById($id) {
         $stmt = $this->db->prepare("
-            SELECT id, email, full_name, role, school_id, created_at 
+            SELECT id, email, password, full_name, role, school_id, created_at 
             FROM users 
             WHERE id = ?
         ");

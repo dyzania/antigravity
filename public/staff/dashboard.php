@@ -99,7 +99,7 @@ if ($window) {
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Served Today</p>
                             <h4 class="text-2xl font-black text-slate-900"><?php echo $staffStats['total_served']; ?></h4>
                         </div>
-                        <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
+                        <div class="w-12 h-12 bg-secondary-50 rounded-xl flex items-center justify-center text-secondary-600">
                             <i class="fas fa-check-double text-xl"></i>
                         </div>
                     </div>
@@ -121,9 +121,9 @@ if ($window) {
                                 $allServices = $windowModel->getWindowServices($window['id']);
                                 $offlineCount = count(array_filter($allServices, function($s) { return !$s['is_enabled']; }));
                             ?>
-                            <h4 class="text-2xl font-black text-secondary-600"><?php echo $offlineCount; ?></h4>
+                            <h4 class="text-2xl font-black text-primary-600"><?php echo $offlineCount; ?></h4>
                         </div>
-                        <div class="w-12 h-12 bg-secondary-50 rounded-xl flex items-center justify-center text-secondary-500">
+                        <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center text-primary-500">
                             <i class="fas fa-toggle-off text-xl"></i>
                         </div>
                     </div>
@@ -205,6 +205,16 @@ if ($window) {
                                     <h4 class="text-xl 5xl:text-4xl font-black text-gray-900 leading-tight mb-1"><?php echo $ticket['user_name']; ?></h4>
                                     <p class="text-xs 5xl:text-2xl font-bold text-primary-600 uppercase tracking-widest"><?php echo $ticket['service_name']; ?></p>
                                 </div>
+
+                                <?php if ($ticket['status'] === 'serving'): ?>
+                                    <div class="mb-6 5xl:mb-12">
+                                        <label for="staff-notes-<?php echo $ticket['id']; ?>" class="block text-[10px] 5xl:text-xl font-black text-gray-400 uppercase tracking-widest mb-2">Notes to User</label>
+                                        <textarea id="staff-notes-<?php echo $ticket['id']; ?>" 
+                                                  class="w-full px-4 5xl:px-10 py-3 5xl:py-8 bg-slate-50 border border-slate-200 rounded-xl 5xl:rounded-[32px] text-xs 5xl:text-2xl font-medium focus:ring-4 focus:ring-primary-100 focus:border-primary-400 transition-all resize-none"
+                                                  placeholder="Type transaction notes here..."
+                                                  rows="3"><?php echo $ticket['staff_notes']; ?></textarea>
+                                    </div>
+                                <?php endif; ?>
 
                                 <div class="space-y-3 5xl:space-y-8 mt-auto">
                                     <?php if ($ticket['status'] === 'called'): ?>

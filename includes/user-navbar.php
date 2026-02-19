@@ -3,6 +3,12 @@
 if (!defined('BASE_URL')) {
     require_once dirname(__DIR__) . '/config/config.php';
 }
+require_once dirname(__DIR__) . '/models/Announcement.php';
+$announcementModel = new Announcement();
+$unreadAnnouncements = 0;
+if (isset($_SESSION['user_id'])) {
+    $unreadAnnouncements = $announcementModel->getUnreadCount($_SESSION['user_id']);
+}
 ?>
 <nav class="sticky top-0 z-[100] w-full">
     <div class="w-full">
@@ -30,6 +36,16 @@ if (!defined('BASE_URL')) {
                         <a href="<?php echo BASE_URL; ?>/user/my-ticket.php" class="px-4 xl:px-6 py-3 rounded-xl text-base xl:text-lg font-black tracking-tight <?php echo str_contains($_SERVER['PHP_SELF'], 'my-ticket.php') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-primary-50 hover:text-primary-600' ?> transition-all duration-300 whitespace-nowrap">
                             <i class="fas fa-user-tag mr-2 opacity-70"></i>My Ticket
                         </a>
+                        <a href="<?php echo BASE_URL; ?>/user/announcements.php" class="px-4 xl:px-6 py-3 rounded-xl text-base xl:text-lg font-black tracking-tight <?php echo str_contains($_SERVER['PHP_SELF'], 'announcements.php') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-primary-50 hover:text-primary-600' ?> transition-all duration-300 flex items-center whitespace-nowrap">
+                            <i class="fas fa-newspaper mr-2 opacity-70"></i>
+                            <span>Announcements</span>
+                            <?php if ($unreadAnnouncements > 0): ?>
+                                <span class="ml-2 flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                </span>
+                            <?php endif; ?>
+                        </a>
                         <a href="<?php echo BASE_URL; ?>/user/history.php" class="px-4 xl:px-6 py-3 rounded-xl text-base xl:text-lg font-black tracking-tight <?php echo str_contains($_SERVER['PHP_SELF'], 'history.php') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-primary-50 hover:text-primary-600' ?> transition-all duration-300 whitespace-nowrap">
                             <i class="fas fa-history mr-2 opacity-70"></i>History
                         </a>
@@ -49,9 +65,15 @@ if (!defined('BASE_URL')) {
                         </button>
                         
                         <!-- Mobile Menu Toggle -->
-                        <button data-collapse-toggle="navbar-user" type="button" class="inline-flex md:hidden items-center p-2 w-10 h-10 justify-center text-gray-600 rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all bg-gray-50 border border-gray-100">
+                        <button data-collapse-toggle="navbar-user" type="button" class="inline-flex md:hidden items-center p-2 w-10 h-10 justify-center text-gray-600 rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all bg-gray-50 border border-gray-100 relative">
                             <span class="sr-only">Open main menu</span>
                             <i class="fas fa-bars text-2xl"></i>
+                            <?php if ($unreadAnnouncements > 0): ?>
+                                <span class="absolute top-1 right-1 flex h-3 w-3">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border-2 border-white"></span>
+                                </span>
+                            <?php endif; ?>
                         </button>
                     </div>
                 </div>
@@ -109,6 +131,15 @@ if (!defined('BASE_URL')) {
                 <li>
                     <a href="<?php echo BASE_URL; ?>/user/my-ticket.php" class="flex items-center py-4 px-6 rounded-2xl <?php echo str_contains($_SERVER['PHP_SELF'], 'my-ticket.php') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-white' ?>">
                         <i class="fas fa-user-tag mr-4 text-lg"></i>My Ticket
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo BASE_URL; ?>/user/announcements.php" class="flex items-center py-4 px-6 rounded-2xl <?php echo str_contains($_SERVER['PHP_SELF'], 'announcements.php') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-white' ?>">
+                        <i class="fas fa-newspaper mr-4 text-lg"></i>
+                        <span class="flex-1">Announcements</span>
+                        <?php if ($unreadAnnouncements > 0): ?>
+                            <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">NEW</span>
+                        <?php endif; ?>
                     </a>
                 </li>
                 <li>

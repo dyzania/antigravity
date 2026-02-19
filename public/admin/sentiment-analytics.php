@@ -2,7 +2,12 @@
 $pageTitle = 'Sentiment Insights';
 require_once __DIR__ . '/../../models/Feedback.php';
 include __DIR__ . '/../../includes/admin-layout-header.php';
+?>
 
+<!-- Add Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<?php
 $feedbackModel = new Feedback();
 $stats = $feedbackModel->getFeedbackStats();
 $trends = $feedbackModel->getFeedbackTrends(30); // Last 30 days
@@ -80,13 +85,17 @@ $windowBreakdown = $db->query("
         <!-- Sentiment Distribution Chart -->
         <div class="lg:col-span-4 bg-white rounded-2xl p-10 shadow-2xl shadow-slate-200/40 border border-white">
             <h3 class="text-xl font-black text-gray-900 font-heading mb-8 text-center">Sentiment Distribution</h3>
-            <canvas id="distributionChart" height="300"></canvas>
+            <div class="h-[300px] w-full relative">
+                <canvas id="distributionChart"></canvas>
+            </div>
         </div>
 
         <!-- Sentiment Trend Chart -->
         <div class="lg:col-span-8 bg-white rounded-2xl p-10 shadow-2xl shadow-slate-200/40 border border-white">
             <h3 class="text-xl font-black text-gray-900 font-heading mb-8 text-center">Sentiment Trends</h3>
-            <canvas id="trendChart" height="140"></canvas>
+            <div class="h-[400px] w-full relative">
+                <canvas id="trendChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -141,19 +150,13 @@ $windowBreakdown = $db->query("
 
     <!-- Recent Feedback Feed -->
     <div class="bg-white rounded-2xl shadow-2xl shadow-slate-200/40 border border-white overflow-hidden">
-        <div class="px-10 py-8 border-b border-slate-50 flex items-center justify-between bg-primary-900 text-white">
-            <div class="w-full text-center"> <!-- Centered Feedback Header -->
+        <div class="px-10 py-8 border-b border-slate-50 flex items-center justify-between bg-primary-900 text-white relative">
+            <div class="flex-1 text-center"> <!-- Centered Feedback Header -->
                 <h3 class="text-2xl font-black font-heading">Feedback Feed</h3>
                 <p class="text-xs font-bold text-primary-300 uppercase tracking-widest mt-1">Real-time analysis of user comments</p>
             </div>
-            <!-- Removed/Adjusted Live Updates badge to not interfere with centering?
-                 Actually the original had justify-between.
-                 If I center the text wrapper, and keep the badge on the right, it might look off.
-                 I will make the main text centered and absolute position the badge or just let flexbox handle it but text-center the content.
-            -->
-            <!-- Let's just center the content Div and keep the badge -->
-        </div>
-            <div class="flex items-center space-x-2">
+            
+            <div class="flex items-center space-x-2 absolute right-10">
                 <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
                 <span class="text-[10px] font-black text-primary-400 uppercase tracking-widest">Live Updates</span>
             </div>
