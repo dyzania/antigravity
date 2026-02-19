@@ -690,7 +690,7 @@ class Ticket {
 
         if ($targetTicket) {
             // Move just after the 3rd person
-            $newTime = date('Y-m-d H:i:s', strtotime($targetTicket['created_at']) + 1);
+            $newTime = date('Y-m-d H:i:s', ($targetTicket['created_at'] ? strtotime($targetTicket['created_at']) : time()) + 1);
         } else {
             // If fewer than 3 people behind, just move to the very end
             $newTime = date('Y-m-d H:i:s', time());

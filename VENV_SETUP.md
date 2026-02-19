@@ -12,13 +12,13 @@ This guide explains how to set up the Python environment for the Sentiment Analy
 If you haven't already, clone the project:
 
 ```bash
-git clone https://github.com/dyzania/antigravity.git equeue-system
-cd equeue-system
+git clone https://github.com/dyzania/antigravity.git ISPSC-E-QUEUE
+cd ISPSC-E-QUEUE
 ```
 
 ## 2. Create the Virtual Environment
 
-Run the following command in the project root directory (`equeue-system/`) to create a virtual environment named `.venv`:
+Run the following command in the project root directory (`ISPSC-E-QUEUE/`) to create a virtual environment named `.venv`:
 
 ### Windows
 
@@ -79,7 +79,7 @@ This will install:
 
 Since `.env` is ignored by git, you must create it manually.
 
-1. Create a file named `.env` in the project root (`equeue-system/`).
+1. Create a file named `.env` in the project root (`ISPSC-E-QUEUE/`).
 2. Add your local configuration key-values. Example:
 
 ```env

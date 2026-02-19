@@ -30,8 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     } elseif ($user && isset($user['unverified'])) {
-        $error = "Please verify your email address before logging in. Check your inbox ($email).";
+        $verifyLink = "verify-otp.php?email=" . urlencode($email) . "&context=verification";
+        $error = "Account not verified. <a href='$verifyLink' class='underline font-black hover:text-white'>Verify Now</a>";
     } else {
+
+
         $error = "Invalid credentials or password";
     }
 }
@@ -106,7 +109,12 @@ if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
         </div>
 
         <!-- Form Side -->
-        <div class="p-8 md:p-20 flex flex-col justify-center bg-primary-950/10">
+        <div class="p-8 md:p-20 flex flex-col justify-center bg-primary-950/10 relative">
+            <!-- Close/Back Button -->
+            <a href="index.php" class="absolute top-8 right-8 w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 group z-20" title="Go Back">
+                <i class="fas fa-times text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+            </a>
+
             <div class="mb-12 text-center lg:text-left">
                 <p class="text-[10px] font-black uppercase tracking-[0.5em] text-primary-500 mb-3">Gateway Alpha</p>
                 <h2 class="text-4xl font-black text-white mb-3 font-heading tracking-tight">Login</h2>

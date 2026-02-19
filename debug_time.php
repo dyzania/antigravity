@@ -1,27 +1,24 @@
 <?php
-require_once 'config/config.php';
-$db = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
+require_once __DIR__ . '/config/config.php';
 
-echo "PHP Time: " . date('Y-m-d H:i:s') . " (Epoch: " . time() . ")\n";
-echo "Config Timezone: " . date_default_timezone_get() . "\n\n";
+echo "PHP Timezone: " . date_default_timezone_set('Asia/Manila') . " (Force Set Result)\n";
+echo "Current PHP Time: " . date('Y-m-d H:i:s') . "\n";
+echo "Current PHP Timestamp: " . time() . "\n";
 
-$stmt = $db->query("SELECT id, ticket_number, status, served_at, service_id FROM tickets WHERE status = 'serving' LIMIT 1");
-$ticket = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if ($ticket) {
-    echo "Active Ticket: " . $ticket['ticket_number'] . "\n";
-    echo "Served At: " . $ticket['served_at'] . " (Epoch: " . strtotime($ticket['served_at']) . ")\n";
-    $elapsed = time() - strtotime($ticket['served_at']);
-    echo "Elapsed Seconds: " . $elapsed . "s\n";
+try {
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->query("SELECT NOW() as now, @@session.time_zone as session_tz, @@global.time_zone as global_tz");
+    $dbTime = $stmt->fetch();
+    echo "DB Time (NOW()): " . $dbTime['now'] . "\n";
+    echo "DB Session TZ: " . $dbTime['session_tz'] . "\n";
+    echo "DB Global TZ: " . $dbTime['global_tz'] . "\n";
     
-    $stmt = $db->prepare("SELECT target_time FROM services WHERE id = ?");
-    $stmt->execute([$ticket['service_id']]);
-    $svc = $stmt->fetch();
-    $totalEst = $svc['target_time'] * 60;
-    $remaining = max(0, $totalEst - $elapsed);
-    echo "Service Est: " . $totalEst . "s\n";
-    echo "Remaining Calculation: " . $remaining . "s\n";
-} else {
-    echo "No serving tickets found to debug.\n";
+    $testExpiry = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+    echo "Test Expiry (+15m): " . $testExpiry . "\n";
+    echo "strtotime(Test Expiry): " . strtotime($testExpiry) . "\n";
+    echo "Comparison (strtotime > time): " . (strtotime($testExpiry) > time() ? "VALID" : "EXPIRED") . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
 }
 ?>

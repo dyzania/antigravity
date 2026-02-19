@@ -48,7 +48,7 @@ $host = $_SERVER['HTTP_HOST'];
 $currentDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $publicPath = (strpos($currentDir, '/public') !== false) ? '/public' : '';
 // This is a common pattern for local PHP apps to handle subdirectories
-$baseUrl = $protocol . '://' . $host . '/antigravity/public';
+$baseUrl = $protocol . '://' . $host . '/ISPSC-E-QUEUE/public';
 define('BASE_URL', $baseUrl);
 
 define('APP_NAME', 'E-Queue System');
@@ -283,6 +283,7 @@ function injectTailwindConfig() {
                             700: '#610101',
                             800: '#4c0101',
                             900: '#380101',
+                            950: '#1a0101',
                         },
                         secondary: {
                             50: '#f0fdf2',
@@ -341,7 +342,6 @@ function injectTailwindConfig() {
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc; /* bg-slate-50 */
             min-height: 100vh;
         }
         h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; }

@@ -23,14 +23,14 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .hero-bg {
-            background-image: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%), url('img/drone.png');
+            background-image: linear-gradient(to right, rgba(26,1,1,0.95) 0%, rgba(26,1,1,0.6) 100%), url('img/drone.png');
             background-size: cover;
             background-position: center;
         }
         .glass-nav {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(26, 1, 1, 0.5);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .animate-float {
             animation: float 6s ease-in-out infinite;
@@ -58,7 +58,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
                 <div class="flex flex-col">
                     <span class="text-lg md:text-2xl font-black tracking-tight font-heading text-white leading-none uppercase">ISPSC</span>
-                    <span class="text-[8px] md:text-[10px] font-bold text-primary-400 tracking-widest uppercase">Main Registrar E-Queue System</span>
+                    <span class="text-[8px] md:text-[10px] font-bold text-primary-300 tracking-widest uppercase">Main Registrar E-Queue System</span>
                 </div>
             </div>
             
@@ -78,14 +78,27 @@ if (isset($_SESSION['user_id'])) {
             </button>
 
             <!-- Mobile Menu Dropdown -->
-            <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 bg-primary-950/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col space-y-6 lg:hidden animate-in slide-in-from-top-4 duration-300">
-                <a href="#features" class="text-sm font-black uppercase tracking-widest text-slate-300 hover:text-white">Features</a>
-                <a href="#stats" class="text-sm font-black uppercase tracking-widest text-slate-300 hover:text-white">Metrics</a>
-                <a href="#about" class="text-sm font-black uppercase tracking-widest text-slate-300 hover:text-white">Vision</a>
-                <div class="h-px w-full bg-white/5"></div>
-                <div class="grid grid-cols-2 gap-4 pt-2">
-                    <a href="login.php" class="flex items-center justify-center px-6 py-4 rounded-2xl border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-white/5">Login</a>
-                    <a href="register.php" class="flex items-center justify-center px-6 py-4 rounded-2xl bg-primary-600 text-white text-xs font-black uppercase tracking-widest">Register</a>
+            <div id="mobile-menu" class="hidden absolute top-[calc(100%+1px)] left-4 right-4 bg-primary-900/95 backdrop-blur-3xl border border-white/10 p-8 flex flex-col space-y-8 lg:hidden rounded-[30px] shadow-ultra animate-in fade-in zoom-in-95 duration-300 origin-top">
+                <div class="flex flex-col space-y-6">
+                    <a href="#features" class="text-sm font-black uppercase tracking-[0.2em] text-gray-300 hover:text-white flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-500 mr-3"></span>
+                        Features
+                    </a>
+                    <a href="#stats" class="text-sm font-black uppercase tracking-[0.2em] text-gray-300 hover:text-white flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary-500 mr-3"></span>
+                        Metrics
+                    </a>
+                    <a href="#about" class="text-sm font-black uppercase tracking-[0.2em] text-gray-300 hover:text-white flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-300 mr-3"></span>
+                        Vision
+                    </a>
+                </div>
+                
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                
+                <div class="flex flex-col gap-4">
+                    <a href="login.php" class="flex items-center justify-center px-6 py-5 rounded-2xl bg-white/5 border border-white/10 text-xs font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all text-white">Login to Account</a>
+                    <a href="register.php" class="flex items-center justify-center px-6 py-5 rounded-2xl bg-primary-600 text-white text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-primary-600/20 active:scale-95 transition-all">Create New Account</a>
                 </div>
             </div>
         </div>
@@ -97,7 +110,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="max-w-4xl">
                 <div class="inline-flex items-center space-x-3 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-full mb-8 animate-pulse">
                     <span class="w-2 h-2 rounded-full bg-primary-500"></span>
-                    <span class="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary-400">V2.0 Quantum Edition Now Live</span>
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary-300">V2.0 Quantum Edition Now Live</span>
                 </div>
                 
                 <h1 class="text-5xl md:text-[7rem] font-black leading-[0.9] font-heading tracking-tighter mb-8 text-glow drop-shadow-2xl">
@@ -140,8 +153,8 @@ if (isset($_SESSION['user_id'])) {
                     <div class="w-16 h-16 bg-primary-600/20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                         <i class="fas fa-bolt text-3xl text-primary-500"></i>
                     </div>
-                    <h3 class="text-2xl font-black mb-4 font-heading">Quantum Routing</h3>
-                    <p class="text-gray-400 font-medium leading-relaxed">
+                    <h3 class="text-2xl font-black mb-4 font-heading text-white">Quantum Routing</h3>
+                    <p class="text-slate-300 font-medium leading-relaxed">
                         Intelligent ticket distribution that balances load across windows instantly using proprietary algorithms.
                     </p>
                 </div>
@@ -151,8 +164,8 @@ if (isset($_SESSION['user_id'])) {
                     <div class="w-16 h-16 bg-secondary-600/20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                         <i class="fas fa-chart-line text-3xl text-secondary-500"></i>
                     </div>
-                    <h3 class="text-2xl font-black mb-4 font-heading">Real-Time Optics</h3>
-                    <p class="text-gray-400 font-medium leading-relaxed" style="color: rgba(255, 255, 255, 0.6);">
+                    <h3 class="text-2xl font-black mb-4 font-heading text-white">Real-Time Optics</h3>
+                    <p class="text-slate-300 font-medium leading-relaxed">
                         Monitor every heartbeat of your facility with live dashboards and instant notification streams with secondary metrics.
                     </p>
                 </div>
@@ -162,8 +175,8 @@ if (isset($_SESSION['user_id'])) {
                     <div class="w-16 h-16 bg-primary-600/20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                         <i class="fas fa-brain text-3xl text-primary-500"></i>
                     </div>
-                    <h3 class="text-2xl font-black mb-4 font-heading">AI Sentiment</h3>
-                    <p class="text-gray-400 font-medium leading-relaxed">
+                    <h3 class="text-2xl font-black mb-4 font-heading text-white">AI Sentiment</h3>
+                    <p class="text-slate-300 font-medium leading-relaxed">
                         Automated feedback analysis that understands your customers' emotions through natural language processing.
                     </p>
                 </div>

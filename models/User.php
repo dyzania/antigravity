@@ -91,7 +91,26 @@ class User {
         return false;
     }
 
+
+    public function requestVerificationOTP($email) {
+        $stmt = $this->db->prepare("SELECT id, full_name, is_verified FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+        
+        if ($user && !$user['is_verified']) {
+            $otpCode = sprintf("%06d", mt_rand(0, 999999));
+            $otpExpiry = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+            
+            $update = $this->db->prepare("UPDATE users SET otp_code = ?, otp_expiry = ? WHERE id = ?");
+            if ($update->execute([$otpCode, $otpExpiry, $user['id']])) {
+                return ['code' => $otpCode, 'full_name' => $user['full_name']];
+            }
+        }
+        return false;
+    }
+
     public function resetPassword($id, $newPassword) {
+
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         $stmt = $this->db->prepare("UPDATE users SET password = ? WHERE id = ?");
         return $stmt->execute([$hashedPassword, $id]);

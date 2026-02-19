@@ -51,9 +51,12 @@ $isCompleted = $ticket && $ticket['status'] === 'completed';
 
 // Calculate remaining time for serving state in PHP to prevent reset on refresh
 $servingRemainingSeconds = null;
-if ($isServing && $avgProcessSeconds && $ticket['served_at']) {
-    $elapsed = time() - strtotime($ticket['served_at']);
-    $servingRemainingSeconds = max(0, $avgProcessSeconds - $elapsed);
+if ($isServing && $avgProcessSeconds && ($ticket['served_at'] ?? null)) {
+    $servedAt = strtotime($ticket['served_at']);
+    if ($servedAt) {
+        $elapsed = time() - $servedAt;
+        $servingRemainingSeconds = max(0, $avgProcessSeconds - $elapsed);
+    }
 }
 
 $avgProcessTimeFormatted = $avgProcessSeconds ? formatDuration($avgProcessSeconds) : "";
@@ -184,7 +187,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                                     </span>
                                                     <?php if ($isCompleted): ?>
                                                         <?php 
-                                                            $totalWaitSeconds = strtotime($ticket['completed_at']) - strtotime($ticket['created_at']);
+                                                            $compAt = ($ticket['completed_at'] ?? null) ? strtotime($ticket['completed_at']) : time();
+                                                            $creatAt = ($ticket['created_at'] ?? null) ? strtotime($ticket['created_at']) : time();
+                                                            $totalWaitSeconds = $compAt - $creatAt;
                                                             echo '<span class="text-[12px] md:text-2xl font-bold text-amber-200/80 tracking-tight leading-none block">' . formatDuration($totalWaitSeconds) . '</span>';
                                                         ?>
                                                     <?php else: ?>
@@ -207,8 +212,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                                           data-ticket-id="<?php echo $ticket['id']; ?>"
                                                           <?php 
                                                             $targetTimestampMs = 0;
-                                                            if ($isServing && $avgProcessSeconds) {
-                                                                $targetTimestampMs = (strtotime($ticket['served_at']) + $avgProcessSeconds) * 1000;
+                                                            if ($isServing && $avgProcessSeconds && ($ticket['served_at'] ?? null)) {
+                                                                $servedAt = strtotime($ticket['served_at']);
+                                                                if ($servedAt) {
+                                                                    $targetTimestampMs = ($servedAt + $avgProcessSeconds) * 1000;
+                                                                }
                                                             } elseif (($isWaiting || $isCalled) && $estimatedWaitSeconds > 0) {
                                                                 $targetTimestampMs = ($now + $estimatedWaitSeconds) * 1000;
                                                             }
@@ -221,7 +229,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                                         <?php 
                                                             if ($isServing) echo $servingRemainingTimeFormatted ?: "-";
                                                             elseif ($isCompleted) {
-                                                                $totalServiceSeconds = strtotime($ticket['completed_at']) - strtotime($ticket['served_at']);
+                                                                $compAt = ($ticket['completed_at'] ?? null) ? strtotime($ticket['completed_at']) : time();
+                                                                $servAt = ($ticket['served_at'] ?? null) ? strtotime($ticket['served_at']) : (($ticket['called_at'] ?? null) ? strtotime($ticket['called_at']) : $compAt);
+                                                                $totalServiceSeconds = $compAt - $servAt;
                                                                 echo formatDuration($totalServiceSeconds);
                                                             }
                                                             else echo $estimatedWait;
@@ -281,14 +291,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                             <p class="text-gray-500 font-medium mb-4 max-w-sm text-lg">We value your time. Let us know how we can improve our service.</p>
                             
                             <?php 
-                            if ($ticket['status'] === 'completed' && $ticket['served_at'] && $ticket['completed_at']) {
-                                $start = strtotime($ticket['served_at']);
+                            if ($ticket['status'] === 'completed' && ($ticket['completed_at'] ?? null)) {
                                 $end = strtotime($ticket['completed_at']);
-                                $diff = $end - $start;
-                                $m = floor($diff / 60);
-                                $s = $diff % 60;
-                                $procTime = ($m > 0 ? "{$m}m " : "") . "{$s}s";
-                                echo "<div class='mb-6 inline-flex items-center px-4 py-1.5 bg-primary-50 text-primary-600 rounded-full text-xs font-black uppercase tracking-widest'>Total Service Time: $procTime</div>";
+                                $start = ($ticket['served_at'] ?? null) ? strtotime($ticket['served_at']) : (($ticket['called_at'] ?? null) ? strtotime($ticket['called_at']) : $end);
+                                
+                                if ($start && $end) {
+                                    $diff = $end - $start;
+                                    $m = floor($diff / 60);
+                                    $s = $diff % 60;
+                                    $procTime = ($m > 0 ? "{$m}m " : "") . "{$s}s";
+                                    echo "<div class='mb-6 inline-flex items-center px-4 py-1.5 bg-primary-50 text-primary-600 rounded-full text-xs font-black uppercase tracking-widest'>Total Service Time: $procTime</div>";
+                                }
                             }
                             ?>
 
@@ -327,14 +340,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         <h3 class="text-3xl font-black text-green-900 font-heading tracking-tight mb-2">Thank You!</h3>
                         <p class="text-green-700 font-medium text-lg">Your feedback has been recorded and analyzed. Safe travels!</p>
                         <?php 
-                        if ($ticket['status'] === 'completed' && $ticket['served_at'] && $ticket['completed_at']) {
-                            $start = strtotime($ticket['served_at']);
+                        if ($ticket['status'] === 'completed' && ($ticket['completed_at'] ?? null)) {
                             $end = strtotime($ticket['completed_at']);
-                            $diff = $end - $start;
-                            $m = floor($diff / 60);
-                            $s = $diff % 60;
-                            $procTime = ($m > 0 ? "{$m}m " : "") . "{$s}s";
-                            echo "<div class='mt-6 inline-flex items-center px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-black uppercase tracking-widest'>Processed in $procTime</div>";
+                            $start = ($ticket['served_at'] ?? null) ? strtotime($ticket['served_at']) : (($ticket['called_at'] ?? null) ? strtotime($ticket['called_at']) : $end);
+                            
+                            if ($start && $end) {
+                                $diff = $end - $start;
+                                $m = floor($diff / 60);
+                                $s = $diff % 60;
+                                $procTime = ($m > 0 ? "{$m}m " : "") . "{$s}s";
+                                echo "<div class='mt-6 inline-flex items-center px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-black uppercase tracking-widest'>Processed in $procTime</div>";
+                            }
                         }
                         ?>
                     </div>

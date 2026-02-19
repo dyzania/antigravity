@@ -48,6 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="max-w-md w-full glass-morphism p-8 md:p-10 rounded-[30px] shadow-2xl border border-white/20 text-center relative overflow-hidden">
+        <!-- Back Button -->
+        <a href="login.php" class="absolute top-6 left-6 w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100/50 hover:bg-gray-200 transition-all active:scale-90 group z-20" title="Back to Login">
+            <i class="fas fa-chevron-left text-gray-600"></i>
+        </a>
+
         
         <div class="mb-8">
             <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform -rotate-3 p-3">

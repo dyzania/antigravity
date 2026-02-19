@@ -2,18 +2,41 @@
 session_start();
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/MailService.php';
 
 $error = null;
 $success = null;
 $context = $_GET['context'] ?? 'verification'; // 'verification' or 'reset'
 $email = $_GET['email'] ?? '';
 
+$userModel = new User();
+$mailService = new MailService();
+
+// Handle resend request
+if (isset($_GET['resend']) && $_GET['resend'] === 'true' && !empty($email)) {
+    $result = false;
+    if ($context === 'reset') {
+        $result = $userModel->requestPasswordReset($email);
+    } else {
+        $result = $userModel->requestVerificationOTP($email);
+    }
+
+    if ($result) {
+        if ($mailService->sendOTPEmail($email, $result['full_name'], $result['code'], $context)) {
+            $success = "New verification code sent to your email.";
+        } else {
+            $error = "Failed to send code. Please try again later.";
+        }
+    } else {
+        $error = "Impossible to refresh protocol. Account may already be verified or does not exist.";
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitize($_POST['email']);
     $otpCode = implode('', $_POST['otp']); // Combine array of inputs
     $context = $_POST['context'];
     
-    $userModel = new User();
     $user = $userModel->verifyOTP($email, $otpCode);
     
     if ($user) {
@@ -49,6 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="max-w-md w-full glass-morphism p-8 md:p-10 rounded-[30px] shadow-2xl border border-white/20 text-center relative overflow-hidden">
+        <!-- Back Button -->
+        <a href="login.php" class="absolute top-6 left-6 w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100/50 hover:bg-gray-200 transition-all active:scale-90 group z-20" title="Back to Login">
+            <i class="fas fa-chevron-left text-gray-600"></i>
+        </a>
+
         
         <div class="mb-8">
             <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform rotate-3 p-3">
@@ -64,6 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="p-4 mb-6 text-sm text-secondary-600 bg-secondary-100 rounded-xl border border-secondary-200 flex items-center justify-center animate-shake">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 <span class="font-bold"><?php echo $error; ?></span>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($success): ?>
+            <div class="p-4 mb-6 text-sm text-primary-600 bg-primary-100 rounded-xl border border-primary-200 flex items-center justify-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span class="font-bold"><?php echo $success; ?></span>
             </div>
         <?php endif; ?>
 
@@ -83,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <p class="mt-8 text-sm text-gray-500 font-medium">
-            Dn't receive the code? <a href="#" class="text-primary-600 font-bold hover:underline">Resend</a>
+            Dn't receive the code? <a href="?resend=true&email=<?php echo urlencode($email); ?>&context=<?php echo urlencode($context); ?>" class="text-primary-600 font-bold hover:underline">Resend</a>
         </p>
         
         <div class="mt-6 pt-6 border-t border-gray-200">

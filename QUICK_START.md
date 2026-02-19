@@ -21,7 +21,7 @@ define('DB_NAME', 'equeue_system');
 ```
 
 ### Step 3: Test (2 minutes)
-1. Open browser: `http://localhost/equeue-system/public`
+1. Open browser: `http://localhost/ISPSC-E-QUEUE/public`
 2. Login with: admin@equeue.com / password
 3. Create a test user account
 4. Test the flow:
@@ -86,7 +86,7 @@ After extraction, you should have:
 **Pages showing 404?**
 - Check web server is pointing to `/public` directory
 - Verify .htaccess is working (Apache)
-- Try: `http://localhost/equeue-system/public/index.php`
+- Try: `http://localhost/ISPSC-E-QUEUE/public/index.php`
 
 **No services showing?**
 - Database imported correctly?

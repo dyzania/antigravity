@@ -41,7 +41,7 @@ A comprehensive queue management system built with PHP, MySQL, and Tailwind CSS 
 1. **Clone or download** the repository
 2. **Import database**: `mysql -u root -p < database/schema.sql`
 3. **Configure**: Edit `config/config.php` with your database credentials
-4. **Access**: Navigate to `http://localhost/equeue-system/public`
+4. **Access**: Navigate to `http://localhost/ISPSC-E-QUEUE/public`
 5. **Login** with default admin credentials:
    - Email: admin@equeue.com
    - Password: password
@@ -172,7 +172,7 @@ The system includes an AI context management interface where admins can:
 ## 📝 File Structure
 
 ```
-equeue-system/
+ISPSC-E-QUEUE/
 ├── config/
 │   └── config.php              # Configuration
 ├── database/

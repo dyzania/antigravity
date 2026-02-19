@@ -16,7 +16,7 @@ start "Sentiment Analysis Server" powershell -NoExit -ExecutionPolicy Bypass -Co
 echo [2/2] Opening Application...
 
 timeout /t 3 /nobreak > nul
-start http://localhost/antigravity/public/index.php
+start http://localhost/ISPSC-E-QUEUE/public/index.php
 
 echo.
 echo ==========================================

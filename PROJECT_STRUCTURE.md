@@ -7,7 +7,7 @@ This is a complete e-queue (electronic queue) management system with three disti
 ## Directory Structure
 
 ```
-equeue-system/
+ISPSC-E-QUEUE/
 │
 ├── config/
 │   └── config.php                 # Database config, helper functions, constants
