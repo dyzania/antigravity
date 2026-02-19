@@ -1,6 +1,6 @@
 # ISPSC E-Queue System - Installation & Deployment Guide
 
-## 🛠️ Requirements
+## Requirements
 
 - **PHP**: 8.1+ (with PDO, MBString, OpenSSL)
 - **Database**: MySQL 5.7+ or MariaDB 10.4+
@@ -10,13 +10,13 @@
 
 ---
 
-## 🚀 Installation Steps
+##  Installation Steps
 
 ### 1. Database Setup
-1. Create a database named `ispsc_equeue` (or your preferred name).
+1. Create a database named `equeue_system` (or your preferred name).
 2. Import the schema:
    ```bash
-   mysql -u root -p ispsc_equeue < database/queue_schema.sql
+   mysql -u root -p equeue_system < database/queue_schema.sql
    ```
 
 ### 2. Configuration

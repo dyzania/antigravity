@@ -14,7 +14,7 @@ Edit `config/config.php`:
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', 'your_password');
-define('DB_NAME', 'ispsc_equeue');
+define('DB_NAME', 'equeue_system');
 ```
 
 ### Step 3: Test the Flow

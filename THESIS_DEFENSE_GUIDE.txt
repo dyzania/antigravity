@@ -104,12 +104,50 @@ KEY FEATURES & IMPLEMENTATION
    - Automatic refresh of ticket lists and status indicators.
 
 ================================================================================
-SECURITY IMPLEMENTATION
+SECURITY IMPLEMENTATION & DEFENSE
 ================================================================================
-1. SQL Injection: Use of PHP PDO with Prepared Statements throughout.
-2. XSS Protection: Content sanitization on input and escaping on output.
-3. Password Security: Hashing via `password_hash()` (bcrypt).
-4. Auth: Role-based access control protecting specific directories.
+
+1. CROSS-SITE REQUEST FORGERY (CSRF) PROTECTION
+   What is it? 
+   CSRF is an attack that tricks a logged-in user into submitting a malicious 
+   request (e.g., calling a ticket, changing a password) without their knowledge.
+   
+   How does this system stop it?
+   - Token Generation: When a user logs in, the system generates a unique, 
+     random "CSRF Token" and stores it in the user's session.
+   - Transmission: This token is embedded in all forms and sent as a header 
+     in AJAX requests.
+   - Validation: For every state-changing request (POST/PUT/DELETE), the server 
+     compares the token sent by the browser with the one in the session.
+   - Result: If they don't match, the request is rejected. This ensures 
+     that only requests originating from our actual application are processed.
+
+2. SQL INJECTION (SQLi) PREVENTION
+   System Measure: use of PHP Data Objects (PDO) with Prepared Statements.
+   - Instead of injecting user input directly into SQL queries (e.g., "$id"), 
+     we use placeholders (e.g., ":id").
+   - The database compiles the SQL logic first, then binds the data separately. 
+     This makes it impossible for malicious user input to change the query's logic.
+
+3. CROSS-SITE SCRIPTING (XSS) PROTECTION
+   System Measure: Context-aware Output Escaping.
+   - All user-generated content (names, comments, notes) is passed through 
+     `htmlspecialchars()` before being displayed in the browser.
+   - This converts characters like `<` and `>` into their HTML entities, 
+     preventing the execution of malicious scripts.
+
+4. PASSWORD SECURITY & HASHING
+   System Measure: One-way Hashing with Bcrypt.
+   - Passwords are never stored in plain text.
+   - We use `password_hash()` with the BCRYPT algorithm, which includes a 
+     unique "salt" for every password to protect against rainbow table attacks.
+
+5. ROLE-BASED ACCESS CONTROL (RBAC)
+   System Measure: Session-level Privilege Verification.
+   - Every protected page or API endpoint checks the user's role in the 
+     session (admin vs staff vs user).
+   - If a regular user tries to access `/admin`, the system detects the 
+     mismatch and redirects them immediately.
 
 ================================================================================
 COMMON DEFENSE QUESTIONS
@@ -125,6 +163,11 @@ A: We use optimized AJAX polling. It's more compatible with standard shared
 Q: What is the purpose of the Python microservice?
 A: To offload heavy NLP processing (Sentiment Analysis) to a language better 
    suited for AI/ML, keeping the core PHP application fast and lightweight.
+
+Q: Why not just use MD5 for passwords?
+A: MD5 is fast and vulnerable to brute-force and rainbow table attacks. 
+   Bcrypt is intentionally slower ("work factor") and salted, making it 
+   secure against modern cracking techniques.
 
 ================================================================================
 END OF THESIS DEFENSE GUIDE

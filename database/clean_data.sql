@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2026 at 06:51 AM
+-- Generation Time: Feb 19, 2026 at 04:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `equeue_system`
+-- Database: `test_db`
 --
 
 -- --------------------------------------------------------
@@ -48,38 +48,20 @@ CREATE TABLE `ai_context` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `ai_context`
---
-
-INSERT INTO `ai_context` (`id`, `content`, `updated_at`) VALUES
-(1, '<h2>I am inevitable. We are located at San Nicolas, Candon City, Ilocos Sur</h2>', '2026-02-15 16:50:09');
-
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chatbot_data`
+-- Table structure for table `announcements`
 --
 
-CREATE TABLE `chatbot_data` (
+CREATE TABLE `announcements` (
   `id` int(11) NOT NULL,
-  `answer` text DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `category_id` int(11) DEFAULT NULL,
-  `question` text DEFAULT NULL,
-  `keywords` text DEFAULT NULL,
-  `usage_count` int(11) DEFAULT 0,
-  `is_active` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `chatbot_data`
---
-
-INSERT INTO `chatbot_data` (`id`, `answer`, `updated_at`, `category_id`, `question`, `keywords`, `usage_count`, `is_active`, `created_at`) VALUES
-(1, '<p>We are the Registrar of ISPSC Main Campus</p>', '2026-02-15 06:31:04', 1, NULL, NULL, 0, 1, '2026-02-15 06:08:44'),
-(2, '<p><br></p>', '2026-02-15 06:22:47', 1, 'Imported from BLISSFUL RURAL LIFE.docx', '', 0, 1, '2026-02-15 06:22:29');
 
 -- --------------------------------------------------------
 
@@ -143,7 +125,9 @@ INSERT INTO `services` (`id`, `service_name`, `service_code`, `description`, `re
 (14, 'Certificate of Grades', 'COG', '', 'Route Sheet\r\nValid ID\r\nCashier Receipt', '', 10, 10, 1, '2026-02-14 02:22:06', '2026-02-17 15:48:48'),
 (15, 'Request of Diploma', 'DPLM', '', 'Official Transcript of Records', NULL, 10, 30, 1, '2026-02-14 02:23:01', '2026-02-17 15:48:28'),
 (16, 'Good Moral Character', 'GMC', 'Good Moral Character', 'Valid ID\r\nOfficial Transcript of Records', NULL, 10, 25, 1, '2026-02-14 07:39:51', '2026-02-17 15:48:28'),
-(17, 'General Inquiry', 'GEN-INQ', 'General concerns', 'None', '', 10, 15, 1, '2026-02-14 19:44:00', '2026-02-17 15:50:08');
+(17, 'General Inquiry', 'GEN-INQ', 'General concerns', 'None', '', 10, 15, 1, '2026-02-14 19:44:00', '2026-02-17 15:50:08'),
+(18, 'Request for Official Transcript of Records', 'OTR', 'Transcript of Records', 'Clearance\r\nLatest ID Picture\r\nSchool ID', 'na ay', 10, 4326, 1, '2026-02-19 08:31:08', '2026-02-19 08:31:08'),
+(19, 'Request for Enrollment and Billing', 'EAB', 'Certificate of Enrollment and Billing', 'Registration Form\r\nScholl ID Duly Validated', 'Don&#039;t be stupid', 10, 5, 1, '2026-02-19 08:34:35', '2026-02-19 08:34:35');
 
 -- --------------------------------------------------------
 
@@ -189,22 +173,22 @@ CREATE TABLE `users` (
   `verification_token` varchar(255) DEFAULT NULL,
   `is_verified` tinyint(1) DEFAULT 0,
   `otp_code` varchar(6) DEFAULT NULL,
-  `otp_expiry` datetime DEFAULT NULL
+  `otp_expiry` datetime DEFAULT NULL,
+  `last_read_announcement_id` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `school_id`, `password`, `full_name`, `role`, `created_at`, `updated_at`, `verification_token`, `is_verified`, `otp_code`, `otp_expiry`) VALUES
-(1, 'admin@equeue.com', NULL, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin', '2026-02-13 16:38:21', '2026-02-13 16:38:21', NULL, 0, NULL, NULL),
-(18, 'w01@window.local', NULL, '$2y$10$Rm1uBXHsPpHPHOq/lyIyN.oS0ofP6rbdVHXE6aUPvlaJ7T83XrOle', 'Staff W-01', 'staff', '2026-02-14 08:04:35', '2026-02-14 08:04:35', NULL, 1, NULL, NULL),
-(19, 'w02@window.local', NULL, '$2y$10$X86VU44sQQXZ98dGLcAvk.IfiR8QzF3WWrJvDgJ7Na742.cPLB1a.', 'Staff W-02', 'staff', '2026-02-14 14:21:48', '2026-02-14 14:21:48', NULL, 1, NULL, NULL),
-(24, 'w03@window.local', NULL, '$2y$10$eL39jKmSNhnElHktV1l39.P6EZ60vhUsRTDdNGwWW/HpFVQkA18Ra', 'Staff W-03', 'staff', '2026-02-15 07:47:03', '2026-02-15 07:47:03', NULL, 1, NULL, NULL),
-(25, 'w04@window.local', NULL, '$2y$10$0M4mIZjkDcgCnK7jxdNvUOjvaYp9nrZ/nvAxhBCpMVw8YXdREaPky', 'Staff W-04', 'staff', '2026-02-15 07:47:11', '2026-02-15 07:47:11', NULL, 1, NULL, NULL),
-(26, 'w05@window.local', NULL, '$2y$10$qvhTIOh761yDJ/b0avt6C.l38yYzzpQJFWHGVJxIBmHd946Fn4lp6', 'Staff W-05', 'staff', '2026-02-15 07:47:16', '2026-02-15 07:47:16', NULL, 1, NULL, NULL),
-(27, 'w06@window.local', NULL, '$2y$10$aE0.I3b7EHkkW/dFIYS94OUvTYylyKxZ1JzW6yG8jIbpp.PmSedKG', 'Staff W-06', 'staff', '2026-02-15 07:47:20', '2026-02-15 07:47:20', NULL, 1, NULL, NULL),
-(28, 'w07@window.local', NULL, '$2y$10$BfNWbHZJKVeRF1fCi/4LoeOSpv3XxLFeglveSnu5HlpsiI9hbwWlK', 'Staff W-07', 'staff', '2026-02-15 07:47:25', '2026-02-15 07:47:25', NULL, 1, NULL, NULL);
+INSERT INTO `users` (`id`, `email`, `school_id`, `password`, `full_name`, `role`, `created_at`, `updated_at`, `verification_token`, `is_verified`, `otp_code`, `otp_expiry`, `last_read_announcement_id`) VALUES
+(1, 'admin@equeue.com', NULL, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin', '2026-02-13 16:38:21', '2026-02-13 16:38:21', NULL, 0, NULL, NULL, 0),
+(18, 'w01@window.local', NULL, '$2y$10$Rm1uBXHsPpHPHOq/lyIyN.oS0ofP6rbdVHXE6aUPvlaJ7T83XrOle', 'Staff W-01', 'staff', '2026-02-14 08:04:35', '2026-02-14 08:04:35', NULL, 1, NULL, NULL, 0),
+(19, 'w02@window.local', NULL, '$2y$10$X86VU44sQQXZ98dGLcAvk.IfiR8QzF3WWrJvDgJ7Na742.cPLB1a.', 'Staff W-02', 'staff', '2026-02-14 14:21:48', '2026-02-14 14:21:48', NULL, 1, NULL, NULL, 0),
+(24, 'w03@window.local', NULL, '$2y$10$eL39jKmSNhnElHktV1l39.P6EZ60vhUsRTDdNGwWW/HpFVQkA18Ra', 'Staff W-03', 'staff', '2026-02-15 07:47:03', '2026-02-15 07:47:03', NULL, 1, NULL, NULL, 0),
+(25, 'w04@window.local', NULL, '$2y$10$0M4mIZjkDcgCnK7jxdNvUOjvaYp9nrZ/nvAxhBCpMVw8YXdREaPky', 'Staff W-04', 'staff', '2026-02-15 07:47:11', '2026-02-15 07:47:11', NULL, 1, NULL, NULL, 0),
+(26, 'w05@window.local', NULL, '$2y$10$qvhTIOh761yDJ/b0avt6C.l38yYzzpQJFWHGVJxIBmHd946Fn4lp6', 'Staff W-05', 'staff', '2026-02-15 07:47:16', '2026-02-15 07:47:16', NULL, 1, NULL, NULL, 0),
+(27, 'w06@window.local', NULL, '$2y$10$aE0.I3b7EHkkW/dFIYS94OUvTYylyKxZ1JzW6yG8jIbpp.PmSedKG', 'Staff W-06', 'staff', '2026-02-15 07:47:20', '2026-02-15 07:47:20', NULL, 1, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -228,13 +212,12 @@ CREATE TABLE `windows` (
 --
 
 INSERT INTO `windows` (`id`, `window_number`, `window_name`, `location_info`, `staff_id`, `is_active`, `created_at`, `updated_at`) VALUES
-(14, 'W-01', 'Window 1', NULL, 18, 1, '2026-02-14 08:04:35', '2026-02-18 03:44:26'),
-(15, 'W-02', 'Window 2', NULL, 19, 1, '2026-02-14 14:21:48', '2026-02-17 16:27:40'),
-(16, 'W-03', 'Window 3', NULL, 24, 1, '2026-02-15 07:47:03', '2026-02-18 02:42:30'),
-(17, 'W-04', 'Window 4', NULL, 25, 1, '2026-02-15 07:47:11', '2026-02-18 02:42:41'),
-(18, 'W-05', 'Window 5', NULL, 26, 1, '2026-02-15 07:47:16', '2026-02-18 02:42:50'),
-(19, 'W-06', 'Window 6', NULL, 27, 0, '2026-02-15 07:47:20', '2026-02-17 14:51:59'),
-(20, 'W-07', 'Window 7', NULL, 28, 0, '2026-02-15 07:47:25', '2026-02-17 14:52:56');
+(14, 'W-01', 'Window 1', NULL, 18, 1, '2026-02-14 08:04:35', '2026-02-19 04:21:54'),
+(15, 'W-02', 'Window 2', NULL, 19, 1, '2026-02-14 14:21:48', '2026-02-19 08:21:09'),
+(16, 'W-03', 'Window 3', NULL, 24, 1, '2026-02-15 07:47:03', '2026-02-19 08:47:41'),
+(17, 'W-04', 'Window 4', NULL, 25, 1, '2026-02-15 07:47:11', '2026-02-19 08:21:42'),
+(18, 'W-05', 'Window 5', NULL, 26, 0, '2026-02-15 07:47:16', '2026-02-19 08:48:32'),
+(19, 'W-06', 'Window 6', NULL, 27, 0, '2026-02-15 07:47:20', '2026-02-17 14:51:59');
 
 -- --------------------------------------------------------
 
@@ -258,31 +241,30 @@ INSERT INTO `window_services` (`id`, `window_id`, `service_id`, `is_enabled`, `c
 (37, 14, 14, 1, '2026-02-14 08:04:45'),
 (38, 14, 15, 1, '2026-02-14 08:04:45'),
 (39, 14, 16, 1, '2026-02-14 08:04:45'),
-(40, 15, 14, 1, '2026-02-14 14:22:01'),
-(41, 15, 15, 1, '2026-02-14 14:22:01'),
-(42, 15, 16, 1, '2026-02-14 14:22:01'),
+(40, 15, 14, 0, '2026-02-14 14:22:01'),
+(41, 15, 15, 0, '2026-02-14 14:22:01'),
+(42, 15, 16, 0, '2026-02-14 14:22:01'),
 (43, 14, 17, 1, '2026-02-14 19:47:13'),
 (44, 15, 17, 1, '2026-02-14 19:47:13'),
-(45, 20, 14, 0, '2026-02-15 07:49:35'),
-(46, 20, 15, 0, '2026-02-15 07:49:35'),
-(47, 20, 16, 0, '2026-02-15 07:49:35'),
-(48, 20, 17, 0, '2026-02-15 07:49:35'),
 (49, 16, 14, 0, '2026-02-15 09:04:36'),
 (50, 16, 17, 0, '2026-02-15 09:04:37'),
 (51, 16, 16, 0, '2026-02-15 09:04:38'),
-(52, 16, 15, 0, '2026-02-15 09:04:38'),
+(52, 16, 15, 1, '2026-02-15 09:04:38'),
 (53, 17, 14, 0, '2026-02-15 09:05:56'),
 (54, 17, 15, 0, '2026-02-15 09:05:56'),
 (55, 17, 16, 0, '2026-02-15 09:05:56'),
 (56, 17, 17, 0, '2026-02-15 09:05:56'),
 (57, 18, 14, 0, '2026-02-15 16:18:16'),
 (58, 18, 15, 0, '2026-02-15 16:18:16'),
-(59, 18, 16, 1, '2026-02-15 16:18:16'),
+(59, 18, 16, 0, '2026-02-15 16:18:16'),
 (60, 18, 17, 0, '2026-02-15 16:18:16'),
 (61, 19, 14, 0, '2026-02-15 16:18:28'),
 (62, 19, 15, 1, '2026-02-15 16:18:28'),
 (63, 19, 16, 0, '2026-02-15 16:18:28'),
-(64, 19, 17, 0, '2026-02-15 16:18:28');
+(64, 19, 17, 0, '2026-02-15 16:18:28'),
+(65, 14, 19, 1, '2026-02-19 08:43:57'),
+(66, 14, 18, 1, '2026-02-19 08:43:58'),
+(67, 17, 18, 1, '2026-02-19 08:48:08');
 
 --
 -- Indexes for dumped tables
@@ -303,9 +285,9 @@ ALTER TABLE `ai_context`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `chatbot_data`
+-- Indexes for table `announcements`
 --
-ALTER TABLE `chatbot_data`
+ALTER TABLE `announcements`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -398,40 +380,40 @@ ALTER TABLE `ai_context`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `chatbot_data`
+-- AUTO_INCREMENT for table `announcements`
 --
-ALTER TABLE `chatbot_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `announcements`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `windows`
@@ -443,7 +425,7 @@ ALTER TABLE `windows`
 -- AUTO_INCREMENT for table `window_services`
 --
 ALTER TABLE `window_services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- Constraints for dumped tables
