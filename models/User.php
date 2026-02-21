@@ -67,11 +67,6 @@ class User {
         return false;
     }
 
-    public function getByToken($token) {
-        $stmt = $this->db->prepare("SELECT id, email, full_name FROM users WHERE verification_token = ?");
-        $stmt->execute([$token]);
-        return $stmt->fetch();
-    }
 
     public function verifyOTP($email, $code) {
         $stmt = $this->db->prepare("
